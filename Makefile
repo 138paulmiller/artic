@@ -43,14 +43,17 @@ clean:
 	@if [ -e $(OBJ_DIR) ]; then rm -r $(OBJ_DIR); fi; 
 	@echo rm -r $(OUT);
 	@if [ -e $(OUT) ]; then rm -r $(OUT); fi;
+	@echo Cleaned
+
+clean_test:
 	@echo rm -r $(TEST_OBJ_DIR); 
 	@if [ -e $(TEST_OBJ_DIR) ]; then rm -r $(TEST_OBJ_DIR); fi; 
 	@echo rm -r $(TEST_OUT);
 	@if [ -e $(TEST_OUT) ]; then rm -r $(TEST_OUT); fi; 
 	@echo Cleaned
 
-test: $(TEST_OBJECTS)
-	$(CC) -o $(TEST_OUT) $^ $(CPPFLAGS)
+test: clean_test $(TEST_OBJECTS)
+	$(CC) -o $(TEST_OUT) $(word 2,$^) $(CPPFLAGS)
 	./$(TEST_OUT)
 
 #install:
