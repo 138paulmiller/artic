@@ -70,7 +70,8 @@ int main(){
 	TEST_EQ("COL 1", m3x4.col(1), Vec3i({2, 6, 10}))
 	TEST_EQ("MATRIX MULT", mul, res)
 	
-
-
 	std::cout << "\n\nDONE\n\n";
 }
+
+
+
