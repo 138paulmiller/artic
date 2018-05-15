@@ -1,3 +1,12 @@
+#ifndef MATH_HPP
+#define MATH_HPP
+/*	
+
+math library for raytracing  
+github.com/138paulmiller
+
+*/
+
 #include <iostream>
 #include <array>
 #include <initializer_list>
@@ -5,15 +14,8 @@
 #include <math.h>
 #include <iomanip>
 
-/*	
-
-Raytracing math library
-github.com/138paulmiller
-
-*/
-
 namespace math{
-	/************************* Forward Decls ***************************/
+/******************************************** Forward Decls *********************************************/
 	long precision = 10;			//variable 
 	double epsilon = 0.1f;			 
 	template <typename ELEM_T, int DIM>
@@ -23,7 +25,7 @@ namespace math{
 	template <typename ELEM_T, int DIM>
 	class Ray;
 
-	/*********************************** Common Types ****************************/			
+/********************************************* Common Types *******************************************/			
 	template <typename T> using Vec2 = Vec<T, 2>;
 	template <typename T> using Vec3 = Vec<T, 3>;
 	template <typename T> using Vec4 = Vec<T, 4>;
@@ -47,7 +49,7 @@ namespace math{
 	using Mat4x4f = Mat4x4<float>;
 	
 
-	/*********************************** Helper Macros  ****************************/
+/**************************************  Helper Macros  **************************************************/
 	#define VEC_TYPE Vec<ELEM_T, DIM>
 	#define MAT_TYPE Mat<ELEM_T, DIM_H, DIM_W>
 	#define RAY_TYPE Ray<ELEM_T, DIM>
@@ -55,7 +57,7 @@ namespace math{
 	//test if almost equal 
 	inline bool almost_equal(double a, double b){ return fabs(b-a) < epsilon; }
 
-	/************************ Overloaded Friend operators **********************/
+/****************************** Overloaded Friend operators **************************************************/
 	
 	template <typename ELEM_T, int DIM>
 	std::ostream & operator<<(std::ostream & os, const VEC_TYPE & vec);
@@ -63,7 +65,7 @@ namespace math{
 	template <typename ELEM_T, int DIM_H, int DIM_W>
 	std::ostream& operator<<(std::ostream & oss, const MAT_TYPE& mat);
 
-	/*********************************** Vec ****************************/
+/***************************************************** Vec **************************************************/
 	template <typename ELEM_T, int DIM>
 	class Vec{
 		private:
@@ -104,7 +106,7 @@ namespace math{
 			friend std::ostream & operator<< (std::ostream & os, const Vec<_ELEM_T, _DIM> & vec);
 	};
 
-	/*********************************** Ray ****************************/
+/********************************************* Ray ********************************************************/
 	template <typename ELEM_T, int DIM>
 	class Ray{
 		private:
@@ -114,7 +116,7 @@ namespace math{
 			const Vec<ELEM_T, DIM> point(ELEM_T t) const; //return point at dist t from origin toward dir 
 	};
 
-	/*********************************** Mat ****************************/
+/************************************************ Mat ******************************************************/
 	template <typename ELEM_T, int DIM_H, int DIM_W>
 	class Mat{
 		/*
@@ -162,7 +164,7 @@ namespace math{
 								const Mat<_ELEM_T, _DIM_H, _DIM_W> & mat);			
 	};
 
-/********************************************************************** Vec Definitions ****************************/
+/******************************************* Vec Definitions *************************************************/
 
 	template <typename ELEM_T, int DIM>
 	VEC_TYPE::Vec(ELEM_T value){
@@ -313,7 +315,7 @@ namespace math{
 		return os << '>';
 	}
 
-	/************************************************ Ray Definitions **************************************************/
+/************************************************ Ray Definitions **************************************************/
 	template <typename ELEM_T, int DIM>
 	RAY_TYPE::Ray(const Vec<ELEM_T, DIM> &origin, const Vec<ELEM_T, DIM> & dir):
 		origin(origin), dir(dir){
@@ -560,7 +562,6 @@ namespace math{
 
 };	
 
-
-
+#endif
 
 

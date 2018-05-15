@@ -32,9 +32,9 @@ Simple psuedocode of the ray casting algorithm
 
 Basic ray casting works, but can be improved, and using this approach as foundation, in [1980](http://artis.imag.fr/Members/David.Roger/whitted.pdf), Turner Whitted improved upon Appel's approach and developed ray tracing. Whitted solved a long standing problem in improving shadows, as well as implementaing a method of simulating reflection and transparency. Rather than just calculating a single ray that is cast out into the scene, Whitted recasted multiple rays out from the point of where the ray intersected with an object  The algorithm will be discussed later, for simplicity we well first implement the ray cast algorithm, then extend its functionality. Below is a scan of his famous raytraced image that contains, shadows, reflection, refractions as well as a nice little checker pattered plane. 
 
-![alt text](res/whitted.png)
+![alt text](res/whitted.jpg)
 
-To gain some perspective into Kajiya's foresight, and the near improbability that real-time raytraccing could ever be acheived, Whitted's 480x640 image took 74 minutes to render.
+To gain some perspective into Kajiya's foresight, and the near improbability that real-time ray tracing could ever be acheived, Whitted's 480x640 image took 74 minutes to render.
 
 A general overview on how to acheive these effects are result in impressive visual effects.
 Simple psuedocode of an approach to the ray tracing algorithm, notice this is a rough approach.
