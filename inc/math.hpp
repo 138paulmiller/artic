@@ -6,9 +6,11 @@
 #include <iomanip>
 
 /*	
-Linear Algebra library
-*/
 
+Raytracing math library
+github.com/138paulmiller
+
+*/
 
 namespace math{
 	/************************* Forward Decls ***************************/
@@ -18,7 +20,7 @@ namespace math{
 	class Vec;
 	template <typename ELEM_T, int DIM_H, int DIM_W>
 	class Mat;
-	template <typename Vec_T>
+	template <typename ELEM_T, int DIM>
 	class Ray;
 
 	/*********************************** Common Types ****************************/			
@@ -48,7 +50,7 @@ namespace math{
 	/*********************************** Helper Macros  ****************************/
 	#define VEC_TYPE Vec<ELEM_T, DIM>
 	#define MAT_TYPE Mat<ELEM_T, DIM_H, DIM_W>
-	#define RAY_TYPE Ray<Vec>
+	#define RAY_TYPE Ray<ELEM_T, DIM>
 
 	//test if almost equal 
 	inline bool almost_equal(double a, double b){ return fabs(b-a) < epsilon; }
@@ -60,8 +62,6 @@ namespace math{
 
 	template <typename ELEM_T, int DIM_H, int DIM_W>
 	std::ostream& operator<<(std::ostream & oss, const MAT_TYPE& mat);
-
-
 
 	/*********************************** Vec ****************************/
 	template <typename ELEM_T, int DIM>
@@ -84,6 +84,10 @@ namespace math{
 			inline VEC_TYPE operator=(const VEC_TYPE & rhs);
 			inline void normalize(); 
 			inline void fill(ELEM_T value); 
+
+			//unary operators
+			inline VEC_TYPE operator-()const;
+
 			// Binary Vector operations
 			inline ELEM_T dot(const VEC_TYPE & rhs)const;
 			inline VEC_TYPE cross(const VEC_TYPE & rhs)const;
@@ -100,6 +104,16 @@ namespace math{
 			friend std::ostream & operator<< (std::ostream & os, const Vec<_ELEM_T, _DIM> & vec);
 	};
 
+	/*********************************** Ray ****************************/
+	template <typename ELEM_T, int DIM>
+	class Ray{
+		private:
+			Vec<ELEM_T, DIM> origin, dir;
+		public:
+			Ray(const Vec<ELEM_T, DIM> &origin, const Vec<ELEM_T, DIM> & dir);
+			const Vec<ELEM_T, DIM> point(ELEM_T t) const; //return point at dist t from origin toward dir 
+	};
+
 	/*********************************** Mat ****************************/
 	template <typename ELEM_T, int DIM_H, int DIM_W>
 	class Mat{
@@ -110,23 +124,35 @@ namespace math{
 			using Vec_T = Vec<ELEM_T, DIM_W>;
 			std::array<Vec_T, DIM_H> _elements;
 		public:
-			Mat(ELEM_T value=0);
+			Mat(ELEM_T value=ELEM_T(0));
 			Mat(std::initializer_list<ELEM_T> ilist);
 			Mat(const MAT_TYPE & other);
 
 			inline MAT_TYPE operator=(const MAT_TYPE & rhs ); 
+			static constexpr bool isSquare();
 
-			inline Vec<ELEM_T, DIM_W> row(const int & i)const;
-			inline Vec<ELEM_T, DIM_H> col(const int & j)const;
-
+			inline const Vec<ELEM_T, DIM_W> row(const int & i)const;
+			inline const Vec<ELEM_T, DIM_H> col(const int & j)const;
+			inline Mat<ELEM_T, DIM_W, DIM_H> transpose()const;
+			inline ELEM_T determinant()const;
 			inline void fill(ELEM_T value);
-
+			template <int RESULT_H, int RESULT_W>
+			inline Mat<ELEM_T, RESULT_H, RESULT_W> submatrix(int top, int left)const ;
+			template <int RESULT_H, int RESULT_W>
+			inline Mat<ELEM_T, RESULT_H, RESULT_W> grow(int row, int col) const;
+	
 			inline bool operator==(const MAT_TYPE & rhs );
 			inline bool operator!=(const MAT_TYPE & rhs );
 			inline Vec_T& operator[](const int &index);
 			inline const Vec_T& operator[](const int &index)const;
 
-			inline bool isSquare() const;
+			inline MAT_TYPE operator-()const;			
+			inline MAT_TYPE operator+(MAT_TYPE rhs)const;
+			inline MAT_TYPE operator-(MAT_TYPE rhs)const;
+			inline MAT_TYPE operator*(ELEM_T scalar)const;
+			inline MAT_TYPE operator/(ELEM_T scalar)const;
+			inline Vec<ELEM_T, DIM_H> solveSystem(const Vec<ELEM_T, DIM_H> &b)const;
+
 
 			template <int RESULT_W> 
 			inline Mat<ELEM_T, DIM_H, RESULT_W> operator*(Mat<ELEM_T, DIM_W, RESULT_W> rhs)const;
@@ -136,16 +162,7 @@ namespace math{
 								const Mat<_ELEM_T, _DIM_H, _DIM_W> & mat);			
 	};
 
-	/*********************************** Ray ****************************/
-	template <typename Vec_T>
-	class Ray{
-		private:
-			Vec_T origin, dir;
-		public:
-			Ray(const Vec_T &origin, const Vec_T & dir);
-	};
-
-/*********************************** Vec Definitions ****************************/
+/********************************************************************** Vec Definitions ****************************/
 
 	template <typename ELEM_T, int DIM>
 	VEC_TYPE::Vec(ELEM_T value){
@@ -197,7 +214,7 @@ namespace math{
 
 	template <typename ELEM_T, int DIM>
 	ELEM_T VEC_TYPE::magnitude2()const{
-		ELEM_T sum = 0;
+		ELEM_T sum = ELEM_T(0);
 		for(auto & e : _elements)
 			sum += e*e;
 		return sum;
@@ -252,6 +269,14 @@ namespace math{
 	}
 	
 	template <typename ELEM_T, int DIM>
+	VEC_TYPE VEC_TYPE::operator-()const{
+		Vec<ELEM_T, DIM> result;
+		for(int i =0; i < DIM; ++i)
+			result._elements[i] = _elements[i]*ELEM_T(-1);	
+		return result;
+	}	
+
+	template <typename ELEM_T, int DIM>
 	VEC_TYPE VEC_TYPE::operator*(ELEM_T scalar)const{
 		VEC_TYPE result(*this);
 		for(auto & e : result._elements)
@@ -287,7 +312,21 @@ namespace math{
 			os <<std::setprecision(precision)<< vec._elements[i] << (i!=DIM-1? ", " : " ");	
 		return os << '>';
 	}
-/*************************** Mat Defintions **************************************************/
+
+	/************************************************ Ray Definitions **************************************************/
+	template <typename ELEM_T, int DIM>
+	RAY_TYPE::Ray(const Vec<ELEM_T, DIM> &origin, const Vec<ELEM_T, DIM> & dir):
+		origin(origin), dir(dir){
+
+	}
+
+	template <typename ELEM_T, int DIM>
+	const Vec<ELEM_T, DIM> RAY_TYPE::point(ELEM_T t) const{
+		return origin+(dir*t); 
+	} 
+
+
+/*************************************************** Mat Defintions **************************************************/
 
 	template <typename ELEM_T, int DIM_H, int DIM_W>
 	MAT_TYPE::Mat(ELEM_T value){
@@ -312,12 +351,18 @@ namespace math{
 			_elements[i] = other._elements[i];					
 		}
 	}
+
 	template <typename ELEM_T, int DIM_H, int DIM_W>
 	MAT_TYPE MAT_TYPE::operator=(const MAT_TYPE & rhs ){
 		for(int i =0; i < DIM_H ; ++i){
 			_elements[i] = rhs._elements[i];					
 		}
 	} 
+
+	template <typename ELEM_T, int DIM_H, int DIM_W>
+	bool constexpr MAT_TYPE::isSquare(){
+		return DIM_W == DIM_H;
+	}
 
 	template <typename ELEM_T, int DIM_H, int DIM_W>
 	typename MAT_TYPE::Vec_T& MAT_TYPE::operator[](const int &index){
@@ -330,17 +375,50 @@ namespace math{
 		assert(index > -1 && index < DIM_H);
 		return _elements[index];
 	}
+	
+	template <typename ELEM_T, int DIM_H, int DIM_W>
+	const Vec<ELEM_T, DIM_W> MAT_TYPE::row(const int & i)const{
+		//return row as vec
+		return (*this)[i];
+	}
+
+	template <typename ELEM_T, int DIM_H, int DIM_W>
+	const Vec<ELEM_T, DIM_H> MAT_TYPE::col(const int & j) const{
+		//return col as vec
+		assert(j > -1 && j < DIM_W);
+		Vec<ELEM_T, DIM_H> column;
+		for(int i =0; i < DIM_H; ++i){
+			column[i] = _elements[i][j];
+		}
+		return column;
+	}
 
 	template <typename ELEM_T, int DIM_H, int DIM_W>
 	void MAT_TYPE::fill(ELEM_T value){
 		for(int i =0; i < DIM_H ; ++i)
-	 		_elements[i].fill(0);					
+	 		_elements[i].fill(value);					
 	}
 
-	
 	template <typename ELEM_T, int DIM_H, int DIM_W>
-	bool MAT_TYPE::isSquare()const{
-		return DIM_W == DIM_H;
+	template <int RESULT_H, int RESULT_W>
+	Mat<ELEM_T, RESULT_H, RESULT_W> MAT_TYPE::submatrix(int top, int left) const{
+		static_assert(RESULT_H <= DIM_H && RESULT_W <= DIM_W,"submatrix: result matrix must be less than H x W");
+		Mat<ELEM_T, RESULT_H, RESULT_W> result;
+		for(int i = 0; i < RESULT_H; ++i)
+			for(int j = 0; j < RESULT_W; ++j)
+				result[i][j] = (*this)[i+top][j+left];
+		return result;				
+	}
+
+	template <typename ELEM_T, int DIM_H, int DIM_W>
+	template <int RESULT_H, int RESULT_W>
+	Mat<ELEM_T, RESULT_H, RESULT_W> MAT_TYPE::grow(int row, int col) const{
+		static_assert(RESULT_H >= DIM_H &&  RESULT_W >= DIM_W,"grow: result matrix must be greater than H x W");
+		Mat<ELEM_T, RESULT_H, RESULT_W> result;
+		for(int i = 0; i < DIM_H; ++i)
+			for(int j = 0; j < DIM_H; ++j)
+				result[i][j] = (*this)[i][j];
+		return result;				
 	}
 
 	template <typename ELEM_T, int DIM_H, int DIM_W>
@@ -356,11 +434,53 @@ namespace math{
 		return !(*this == rhs);
 	} 
 
+
+	template <typename ELEM_T, int DIM_H, int DIM_W>
+	MAT_TYPE MAT_TYPE::operator-()const{
+		MAT_TYPE result;
+		for(int i = 0; i < _elements.size(); ++i)
+			result[i] = -_elements[i];
+		return result;
+	}			
+	template <typename ELEM_T, int DIM_H, int DIM_W>
+	MAT_TYPE MAT_TYPE::operator+(MAT_TYPE rhs)const{
+		MAT_TYPE result;
+		for(int i = 0; i < _elements.size(); ++i)
+			result[i] = _elements[i]+rhs[i];
+		return result;
+
+	}
+	template <typename ELEM_T, int DIM_H, int DIM_W>
+	MAT_TYPE MAT_TYPE::operator-(MAT_TYPE rhs)const{
+		MAT_TYPE result;
+		for(int i = 0; i < _elements.size(); ++i)
+			result[i] = _elements[i]-rhs[i];
+		return result;
+
+	}
+	template <typename ELEM_T, int DIM_H, int DIM_W>
+	MAT_TYPE MAT_TYPE::operator*(ELEM_T scalar)const{
+		MAT_TYPE result;
+		for(int i = 0; i < _elements.size(); ++i)
+			result[i] = _elements[i]*scalar;
+		return result;
+
+	}
+	template <typename ELEM_T, int DIM_H, int DIM_W>
+	MAT_TYPE MAT_TYPE::operator/(ELEM_T scalar)const{
+		MAT_TYPE result;
+		for(int i = 0; i < _elements.size(); ++i)
+			result[i] = _elements[i]/scalar;
+		return result;
+
+	}
+
+
 	template <typename ELEM_T, int DIM_H, int DIM_W>
 	template <int RESULT_W> Mat<ELEM_T, DIM_H, RESULT_W>
 	MAT_TYPE::operator*(Mat<ELEM_T, DIM_W, RESULT_W> rhs)const{
 		// if A is an n × m matrix and B is an m × p matrix, their matrix product AB is an n × p
-		Mat<ELEM_T, DIM_H, RESULT_W> result(0);
+		Mat<ELEM_T, DIM_H, RESULT_W> result;
 		for(int i =0; i < DIM_H; ++i){
 			for(int j =0; j < RESULT_W; ++j){
 				result[i][j] = row(i).dot(rhs.col(j));
@@ -370,22 +490,59 @@ namespace math{
 	}
 
 	template <typename ELEM_T, int DIM_H, int DIM_W>
-	Vec<ELEM_T, DIM_W> MAT_TYPE::row(const int & i)const{
-		//return row as vec
-		return (*this)[i];
+	Mat<ELEM_T, DIM_W, DIM_H> MAT_TYPE::transpose()const{
+		// if A is an n × m matrix and B is an m × p matrix, their matrix product AB is an n × p
+		Mat<ELEM_T, DIM_W, DIM_H> result;
+		for(int i =0; i < DIM_H; ++i){
+			for(int j =0; j < DIM_W; ++j){
+				result[j][i] = (*this)[i][j];
+			}
+		}
+		return result;
 	}
-
 
 	template <typename ELEM_T, int DIM_H, int DIM_W>
-	Vec<ELEM_T, DIM_H> MAT_TYPE::col(const int & j)const{
-		//return col as vec
-		assert(j > -1 && j < DIM_W);
-		Vec<ELEM_T, DIM_H> column;
-		for(int i =0; i < DIM_H; ++i){
-			column[i] = _elements[i][j];
-		}
-		return column;
+	ELEM_T MAT_TYPE::determinant()const{
+		static_assert(isSquare(), "determinant: only defined for square matrices");
+		static_assert((DIM_W == 2) || (DIM_W == 3), "determinant: only implemented for 2x2 and 3x3 matrices");
+		/*
+		Since there are only two possible conditions solve each explicitly
+		 | a b |
+		 | c d |  
+		DET(2x2) = ad-bc
+		 | a b c |
+		 | d e f |          | e f |          | b c |           | b e |
+		 | g h i |  = a*det(| h i |) - d*det(| h i |) + g*det (| c f |)  
+		DET(3x3) = a(ei - fh) - d(bi - ch) + g(bf-ce) 
+		*/
+		if(DIM_W == 2)
+			return (*this)[0][0]*(*this)[1][1] - (*this)[0][1]*(*this)[1][0];
+		else if(DIM_W == 3)
+			return (*this)[0][0]* ((*this)[1][1]*(*this)[2][2] - (*this)[1][2]*(*this)[2][1] ) 
+				-  (*this)[1][0]* ((*this)[0][1]*(*this)[2][2] - (*this)[0][2]*(*this)[2][1] ) 
+				+  (*this)[2][0]* ((*this)[0][1]*(*this)[1][2] - (*this)[0][2]*(*this)[1][1] ) ;
+		else //should never execute	
+			return 0;
+
 	}
+
+	template <typename ELEM_T, int DIM_H, int DIM_W>
+	Vec<ELEM_T, DIM_H> MAT_TYPE::solveSystem(const Vec<ELEM_T, DIM_H> &b)const{
+		static_assert(isSquare(), "determinant: only defined for square matrices");
+		/*
+		Solves linear system Ax=b for x given A and b*/
+		Vec<ELEM_T, DIM_H> x; 
+		ELEM_T d = determinant();
+		for (int i = 0; i < DIM_W; i++){
+			MAT_TYPE new_matrix(*this);
+			for (int j = 0; j < DIM_H; j++){ 
+				new_matrix[j][i] = b[j]; 
+            }
+			x[i] = new_matrix.determinant() / d;
+		}
+		return x;
+	}
+
 
 	template <typename ELEM_T, int DIM_H, int DIM_W>
 	std::ostream& operator<<(std::ostream & oss, const MAT_TYPE& mat){
@@ -398,9 +555,9 @@ namespace math{
 	 		}
  			oss << "\n";
 	 	}
-		return oss << "]";
-		
+		return oss << "]";	
 	}
+
 };	
 
 

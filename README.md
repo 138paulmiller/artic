@@ -1,8 +1,6 @@
 # artic
 ###### Another RayTracer in C++
 
-### Build
-	make 
+### Build Options
+	make [rebuild][clean][test]
 
-### Testing
-	make test 
