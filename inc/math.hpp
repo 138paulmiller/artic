@@ -16,8 +16,8 @@ github.com/138paulmiller
 
 namespace math{
 /******************************************** Forward Decls *********************************************/
-	long precision = 10;			//variable 
-	double epsilon = 0.1f;			 
+	static long precision = 10;			//variable 
+	static double epsilon = 0.1f;			 
 	template <typename ELEM_T, int DIM>
 	class Vec;
 	template <typename ELEM_T, int DIM_H, int DIM_W>
@@ -29,26 +29,33 @@ namespace math{
 	template <typename T> using Vec2 = Vec<T, 2>;
 	template <typename T> using Vec3 = Vec<T, 3>;
 	template <typename T> using Vec4 = Vec<T, 4>;
+
+	template <typename T> using Ray2 = Ray<T, 2>;
+	template <typename T> using Ray3 = Ray<T, 3>;
+	template <typename T> using Ray4 = Ray<T, 4>;
+
 	template <typename T> using Mat2x2 = Mat<T, 3, 3>;
 	template <typename T> using Mat3x3 = Mat<T, 3, 3>;
 	template <typename T> using Mat4x4 = Mat<T, 4, 4>;
 
 	using Vec2i = Vec2<int>;
-	using Vec2f = Vec2<float>;
+	using Vec2f = Vec2<double>;
 
 	using Vec3i = Vec3<int>;
-	using Vec3f = Vec3<float>;
+	using Vec3f = Vec3<double>;
 
 	using Vec4i = Vec4<int>;
-	using Vec4f = Vec4<float>;
+	using Vec4f = Vec4<double>;
+
+	using Ray3i = Ray3<int>;
+	using Ray3f = Ray3<double>;
 
 	using Mat3x3i = Mat3x3<int>;
-	using Mat3x3f = Mat3x3<float>;
+	using Mat3x3f = Mat3x3<double>;
 
 	using Mat4x4i = Mat4x4<int>;
-	using Mat4x4f = Mat4x4<float>;
+	using Mat4x4f = Mat4x4<double>;
 	
-
 /**************************************  Helper Macros  **************************************************/
 	#define VEC_TYPE Vec<ELEM_T, DIM>
 	#define MAT_TYPE Mat<ELEM_T, DIM_H, DIM_W>
@@ -110,9 +117,15 @@ namespace math{
 	template <typename ELEM_T, int DIM>
 	class Ray{
 		private:
-			Vec<ELEM_T, DIM> origin, dir;
+			Vec<ELEM_T, DIM> _origin, _dir;
 		public:
+			Ray();
 			Ray(const Vec<ELEM_T, DIM> &origin, const Vec<ELEM_T, DIM> & dir);
+			
+			inline void set(const Vec<ELEM_T, DIM> & origin, const Vec<ELEM_T, DIM> & dir);
+	
+			inline void setOrigin(const Vec<ELEM_T, DIM> & origin);
+			inline void setDirection(const Vec<ELEM_T, DIM> & dir);
 			const Vec<ELEM_T, DIM> point(ELEM_T t) const; //return point at dist t from origin toward dir 
 	};
 
@@ -315,16 +328,38 @@ namespace math{
 		return os << '>';
 	}
 
+
 /************************************************ Ray Definitions **************************************************/
+
+	template <typename ELEM_T, int DIM>
+	RAY_TYPE::Ray(){
+	}
+
 	template <typename ELEM_T, int DIM>
 	RAY_TYPE::Ray(const Vec<ELEM_T, DIM> &origin, const Vec<ELEM_T, DIM> & dir):
-		origin(origin), dir(dir){
+		_origin(origin), _dir(dir){
 
+	}
+
+	// template <typename ELEM_T, int DIM>
+	// void RAY_TYPE::set(const Vec<ELEM_T, DIM> origin, const Vec<ELEM_T, DIM> dir){
+	// 		_origin = origin;
+	// 		_dir = dir;
+	// }
+
+	template <typename ELEM_T, int DIM>
+	void RAY_TYPE::setOrigin(const Vec<ELEM_T, DIM> & origin){
+			_origin = origin;
+	}
+
+	template <typename ELEM_T, int DIM>
+	void RAY_TYPE::setDirection(const Vec<ELEM_T, DIM> & dir){
+		_dir = dir;
 	}
 
 	template <typename ELEM_T, int DIM>
 	const Vec<ELEM_T, DIM> RAY_TYPE::point(ELEM_T t) const{
-		return origin+(dir*t); 
+		return _origin+(_dir*t); 
 	} 
 
 

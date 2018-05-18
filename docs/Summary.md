@@ -84,18 +84,17 @@ Can be defined as geometry primitives, such as spheres, triangles, planes or box
 ## Usage
 Straighforward psuedocode outlining the usage of each componenet described above
 
-	camera(new gfx::camera({0, 0, 0},	//eye pos
-							{0, 0, -1},	//view
-							{0, 1, 0}));//up
-	viewport(new gfx::viewport(400,	//x resolution
-						      300,	//yresolution
-						      -1, 1,	//left right
-						      1, -1));  //top bottom
+	camera(	{0, 0, 0},	//eye pos
+			{0, 0, -1},	//view dir
+			{0, 1, 0}));//up
+	viewport(400, 300,	// img resolution
+			  -1, 1,	//left right
+			   1, -1);	//top bottom
 	projection(new orthographic_projection());
 	shader(new flat_shader());
-	raytracer rt(camera, the_viewport, the_projection, the_shader);
+	raytracer rt(camera, viewport, projection, shader);
 	scene scene(BACKGROUND_COLOR)
-	hdr_image img
+	hdr_image img;
 	rt.render(img, the_scene)
 
 

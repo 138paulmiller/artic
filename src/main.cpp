@@ -1,24 +1,33 @@
-#include "math.hpp"
-#include "util.hpp"
-#include <cmath>
+#include "raytracer.hpp"
+#include "image.hpp"
+void testPPM();
+
 int main(){
+	//testPPM();
 
-	const int W = 255;
-	const int H = 255;
-	HDR img[H*W];
-	int cx =W/2; int cy = H/2;
-	int radius = (W+H)/4;
-	float d = 0;
-	for(int y =0; y < H; ++y){
-		for(int x =0; x < W; ++x){
-			d = sqrt((x-cx)*(x-cx)+(y-cy)*(y-cy));
-			if(d < radius){
-				img[y*W+x].r = (double)x/W;
-				img[y*W+x].g = (double)y/H;
+	Image<HDR> img(480, 480);
+	Scene scene;
 
-			}
-		}
-	}
-	writePPM("Out.ppm", img, W, H);
+
+	std::unique_ptr<Projection> projection;
+	std::unique_ptr<Camera> camera;
+	std::unique_ptr<Viewport> viewport;
+	std::unique_ptr<Shader> shader;
+	
+	projection.reset(new PerspectiveProjection(1));
+	camera.reset(new Camera({0,0,0}, {0,1,0}, {0,0,-1}));
+	viewport.reset(new Viewport(img.width(), img.height(), -1,1,-1,1));
+	shader.reset(new FlatShader());
+
+	RayTracer rt(camera,viewport,projection, shader);
+
+	rt.setBackgroundColor(HDR(1,0.4,0));
+
+	rt.render(scene, img);
+
+	Image<HDR>::exportPPM("OUT.ppm", img);
 
 }
+
+
+
