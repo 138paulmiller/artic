@@ -14,8 +14,8 @@ using namespace math;
 class Scene{
 public:
 	Scene();
-	void addLight(std::shared_ptr<Light> & light);
-	void addObject(std::shared_ptr<Object> & object);
+	void addLight(std::shared_ptr<Light>  light);
+	void addObject(std::shared_ptr<Object>  object);
 
 	inline const std::vector<std::shared_ptr<Object> > & objects() const {return _objects;}
 	inline const std::vector<std::shared_ptr<Light> > & light()const  {return _lights;}

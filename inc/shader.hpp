@@ -6,18 +6,18 @@
 
 class Shader{
 public:
-	virtual HDR shade(const Camera& camera, const Scene& scene, const Intersection & intersection)=0;
+	virtual Vec3f shade(const Camera& camera, const Scene& scene, const Intersection & intersection)=0;
 
 };
 
 class FlatShader : public Shader{
 public:
-	HDR shade(const Camera& camera, const Scene& scene, const Intersection & intersection);
+	Vec3f shade(const Camera& camera, const Scene& scene, const Intersection & intersection);
 };
 
 class BlinnPhongShader : public Shader{
 public:
-	HDR shade(const Camera& camera, const Scene& scene, const Intersection & intersection);
+	Vec3f shade(const Camera& camera, const Scene& scene, const Intersection & intersection);
 };
 
 

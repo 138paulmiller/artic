@@ -43,5 +43,5 @@ PerspectiveProjection::PerspectiveProjection(double focalLength)
 
 void PerspectiveProjection::getViewRay(math::Ray3f &viewRay,const Camera& camera, double u, double v) const{
 	viewRay.setOrigin(camera.eye());
-	viewRay.setDirection(-camera.w() * _focalLength + camera.u()*u + camera.v()*v);
+	viewRay.setDirection((-camera.w() * _focalLength + camera.u()*u + camera.v()*v).normal() ) ;
 }

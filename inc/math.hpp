@@ -124,6 +124,9 @@ namespace math{
 			
 			inline void set(const Vec<ELEM_T, DIM> & origin, const Vec<ELEM_T, DIM> & dir);
 	
+			inline const Vec<ELEM_T, DIM> & origin() const ;
+			inline const Vec<ELEM_T, DIM> & direction() const ;
+	
 			inline void setOrigin(const Vec<ELEM_T, DIM> & origin);
 			inline void setDirection(const Vec<ELEM_T, DIM> & dir);
 			const Vec<ELEM_T, DIM> point(ELEM_T t) const; //return point at dist t from origin toward dir 
@@ -340,13 +343,15 @@ namespace math{
 		_origin(origin), _dir(dir){
 
 	}
+	template <typename ELEM_T, int DIM>
+	const Vec<ELEM_T, DIM> & RAY_TYPE::origin() const {
+		return _origin;
+	}
 
-	// template <typename ELEM_T, int DIM>
-	// void RAY_TYPE::set(const Vec<ELEM_T, DIM> origin, const Vec<ELEM_T, DIM> dir){
-	// 		_origin = origin;
-	// 		_dir = dir;
-	// }
-
+	template <typename ELEM_T, int DIM>
+	const Vec<ELEM_T, DIM> & RAY_TYPE::direction() const {
+		return _dir;
+	}
 	template <typename ELEM_T, int DIM>
 	void RAY_TYPE::setOrigin(const Vec<ELEM_T, DIM> & origin){
 			_origin = origin;

@@ -16,7 +16,7 @@ void RayTracer::render(const Scene& scene, Image<HDR> & image ){
 	if(!ready()) return;
 	Intersection intersection;
 	Ray3f viewRay; 
-	HDR color;
+	Vec3f color;
 	double u,v;
 	for(int j = 0; j < image.height(); ++j ){	
 		for(int i = 0; i < image.width(); ++i ){
@@ -24,26 +24,25 @@ void RayTracer::render(const Scene& scene, Image<HDR> & image ){
 			_viewport->uv(u,v, i,j);
 			_projection->getViewRay(viewRay, *_camera, u,v);
 			color = trace(viewRay, scene, intersection);
-			if(intersection.valid())
-				image.pixel(i,j) = color;
-			else
-				image.pixel(i,j) = _backgroundColor;
-
+			image.pixel(i,j).set(color[0], color[1], color[2]);
 		}
 	}
 }
 
-HDR RayTracer::trace(const Ray3f & viewRay, const Scene & scene, Intersection& intersection, int depth){
+Vec3f RayTracer::trace(const Ray3f & viewRay, const Scene & scene, Intersection& intersection, int depth){
 	//traces the ray !
 	//recursively follow the ray
 	//if hit
 	for( auto const & object : scene.objects()){
 		object->checkIntersection(viewRay, intersection);
 	}
-	return _shader->shade(*_camera, scene, intersection);
+	if(intersection.valid())
+
+		return _shader->shade(*_camera, scene, intersection);
+	return _backgroundColor;
 }
 
-void RayTracer::setBackgroundColor(HDR backgroundColor){
+void RayTracer::setBackgroundColor(Vec3f backgroundColor){
 	_backgroundColor = backgroundColor;
 }
 
