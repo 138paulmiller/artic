@@ -469,9 +469,17 @@ namespace math{
 	const Vec<ELEM_T, DIM> & RAY_TYPE::direction() const {
 		return _dir;
 	}
+
+	template <typename ELEM_T, int DIM>
+
+ 	void RAY_TYPE::set(const Vec<ELEM_T, DIM> & origin, const Vec<ELEM_T, DIM> & dir){
+ 		_origin = origin;
+		_dir = dir;
+ 	}
+
 	template <typename ELEM_T, int DIM>
 	void RAY_TYPE::setOrigin(const Vec<ELEM_T, DIM> & origin){
-			_origin = origin;
+		_origin = origin;
 	}
 
 	template <typename ELEM_T, int DIM>

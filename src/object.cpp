@@ -8,10 +8,16 @@ Intersection::Intersection(){
 void Intersection::update(Object * object, const Vec3f & poi, const Vec3f & normal, double distance){
 	if(distance < _distance){
 		_distance = distance;
-		_object=object;
+		_object= object;
 		_poi = poi;
 		_normal = normal;
 	}		
+}
+
+void Intersection::setMaxDistance(double maxDistance){
+	if(_distance > maxDistance){
+		_distance = maxDistance;
+	}
 }
 
 double Intersection::distance(){

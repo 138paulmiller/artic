@@ -23,15 +23,17 @@ struct Material{
 	Color diffuse;
 	Color specular;
 	double shininess;
+	double refraction;
+	double reflection;
 
 	Material(){}
 	Material(	
 	//	const Color &  base,		const Color & emission,
-		const Color & ambient,	const Color & diffuse,
-		const Color & specular,	double shininess):
-	//base(base),			emission(emission),
-	ambient(ambient),	diffuse(diffuse),
-	specular(specular),	shininess(shininess){}
+		const Color & ambient,	const Color & diffuse,	const Color & specular,	
+		double shininess, double refraction, double reflection):
+	ambient(ambient),	diffuse(diffuse), specular(specular),	
+	shininess(shininess),refraction(refraction), reflection(reflection){}
+
 };
 
 
@@ -51,14 +53,15 @@ public:
 class Intersection{
 	//encapsulates object intersection
 private:
-	double _distance; //distance, only update 
+	double _distance; //distance, only updated when closer object intersects 
 	Vec3f _poi; //opoint of intersection 
 	Vec3f _normal; //opoint of intersection 
 	Object * _object; //only reference, will not delete 
 public:
 	Intersection();
 	//checks if new intersection 
-	void update(Object * object, const Vec3f & poi, const Vec3f & normal,  double distance);
+	void update(Object * object, const Vec3f & poi, const Vec3f & normal, double distance);
+	void setMaxDistance(double maxDistance);
 	double distance();				
 	Vec3f poi()const;
 	Vec3f normal()const; 		

@@ -7,21 +7,15 @@
 class Light{
 public:
 	Light(
-	const Vec3f & pos,
-	const Color & ambient,
-	const Color & diffuse,
-	const Color & specular);
+	const Vec3f & position,
+	const Color & color);
 
-	const Vec3f & pos() const;
-	const Color & ambient()const;
-	const Color & diffuse()const;
-	const Color & specular()const;
+	const Vec3f & position() const;
+	const Color & color()const;
 private:
 	Vec3f _pos;
 	//intensities
-	Color _ambient;
-	Color _diffuse;
-	Color _specular;
+	Color _color;
 };
 
 #endif	//LIGHT_HPP

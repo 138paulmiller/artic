@@ -82,7 +82,7 @@ https://www.scratchapixel.com/lessons/3d-basic-rendering/minimal-ray-tracer-rend
 ## Lights
 ## Flat
 ## Blinn-Phong 
-
+https://courses.cs.washington.edu/courses/cse457/11au/lectures/shading.pdf
 
 ## Usage
 Straighforward psuedocode outlining the usage of each componenet described above
