@@ -6,18 +6,19 @@
 
 class Shader{
 public:
-	virtual Vec3f shade(const Camera& camera, const Scene& scene, const Intersection & intersection)=0;
+	//assumes shade is called on a valid intersection
+	virtual void shade( Color & color, const Camera& camera, const Scene& scene, const Intersection & intersection)=0;
 
 };
 
 class FlatShader : public Shader{
 public:
-	Vec3f shade(const Camera& camera, const Scene& scene, const Intersection & intersection);
+	void shade(Color & color, const Camera& camera, const Scene& scene, const Intersection & intersection);
 };
 
 class BlinnPhongShader : public Shader{
 public:
-	Vec3f shade(const Camera& camera, const Scene& scene, const Intersection & intersection);
+	void shade(Color & color, const Camera& camera, const Scene& scene, const Intersection & intersection);
 };
 
 

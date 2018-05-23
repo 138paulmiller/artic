@@ -1,22 +1,22 @@
 #include "raytracer.hpp"
 
 RayTracer::RayTracer(
-		std::unique_ptr<Camera>& camera,
-		std::unique_ptr<Viewport>& viewport,
-		std::unique_ptr<Projection>& projection,
-		std::unique_ptr<Shader> & shader)
-	:_camera(std::move(camera)), 
-	_viewport(std::move(viewport)), 
-	_projection(std::move(projection)), 
-	_shader(std::move(shader)){
+		Camera* camera,
+		Viewport* viewport,
+		Projection* projection,
+		Shader* shader)
+	:_camera(camera), 
+	_viewport(viewport), 
+	_projection(projection), 
+	_shader(shader){
 }
 
 
-void RayTracer::render(const Scene& scene, Image<HDR> & image ){
-	if(!ready()) return;
+void RayTracer::render(const Scene& scene, Image & image ){
+	if(!valid()) return;
 	Intersection intersection;
 	Ray3f viewRay; 
-	Vec3f color;
+	Color color;
 	double u,v;
 	for(int j = 0; j < image.height(); ++j ){	
 		for(int i = 0; i < image.width(); ++i ){
@@ -24,50 +24,48 @@ void RayTracer::render(const Scene& scene, Image<HDR> & image ){
 			_viewport->uv(u,v, i,j);
 			_projection->getViewRay(viewRay, *_camera, u,v);
 			color = trace(viewRay, scene, intersection);
-			image.pixel(i,j).set(color[0], color[1], color[2]);
+			image.pixel(i,j) = color;
 		}
 	}
 }
 
-Vec3f RayTracer::trace(const Ray3f & viewRay, const Scene & scene, Intersection& intersection, int depth){
+Color RayTracer::trace(const Ray3f & viewRay, const Scene & scene, Intersection& intersection, int depth){
 	//traces the ray !
 	//recursively follow the ray
 	//if hit
+	Color color;
 	for( auto const & object : scene.objects()){
 		object->checkIntersection(viewRay, intersection);
 	}
 	if(intersection.valid())
-
-		return _shader->shade(*_camera, scene, intersection);
-	return _backgroundColor;
+		_shader->shade(color, *_camera, scene, intersection);
+	else
+		color =_backgroundColor;
+	return color;
 }
 
-void RayTracer::setBackgroundColor(Vec3f backgroundColor){
+void RayTracer::setBackgroundColor(const Color & backgroundColor){
 	_backgroundColor = backgroundColor;
 }
 
 
-void RayTracer::resetCamera(std::unique_ptr<Camera>& camera){
-	_camera.reset();
-	_camera = std::move(camera);
+void RayTracer::setCamera(Camera* camera){
+	_camera = camera;
 }
 
-void RayTracer::resetViewport(std::unique_ptr<Viewport>& viewport){
-	_viewport.reset();
-	_viewport = std::move(viewport);
+void RayTracer::setViewport(Viewport* viewport){
+	_viewport = viewport;
 }
-void RayTracer::resetProjection(std::unique_ptr<Projection>& projection){
-	_projection.reset();
-	_projection = std::move(projection);
+void RayTracer::setProjection(Projection* projection){
+	_projection = projection;
 }
 
-void RayTracer::resetShader(std::unique_ptr<Shader>& shader){
-	_shader.reset();
-	_shader = std::move(shader);
+void RayTracer::setShader(Shader* shader){
+	_shader = shader;
 }
 
 
-bool RayTracer::ready(){
+bool RayTracer::valid(){
 	return _shader != nullptr 
 		&& _projection != nullptr 
 		&& _camera != nullptr 

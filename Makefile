@@ -39,7 +39,7 @@ rebuild : clean all
 	@echo Rebuild Complete
 
 #If remove fails, contiue
-clean:
+clean: clean_test
 	@echo rm -r $(BUILD_DIR);
 	@if [ -e $(BUILD_DIR) ]; then rm -r $(BUILD_DIR); fi; 
 	@echo Cleaned

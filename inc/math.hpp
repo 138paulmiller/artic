@@ -8,6 +8,7 @@ github.com/138paulmiller
 */
 
 #include <iostream>
+#include <exception>
 #include <array>
 #include <initializer_list>
 #include <assert.h>
@@ -17,7 +18,7 @@ github.com/138paulmiller
 namespace math{
 /******************************************** Forward Decls *********************************************/
 	static long precision = 10;			//variable 
-	static double epsilon = 0.1f;			 
+	static double epsilon = 0.0001f;			 
 	template <typename ELEM_T, int DIM>
 	class Vec;
 	template <typename ELEM_T, int DIM_H, int DIM_W>
@@ -73,6 +74,14 @@ namespace math{
 	std::ostream& operator<<(std::ostream & oss, const MAT_TYPE& mat);
 
 /***************************************************** Vec **************************************************/
+	class MathException : public std::exception{
+	public:
+		MathException(const std::string & msg ):msg(msg){}
+		std::string what(){return msg;}
+		std::string msg;
+	};
+
+
 	template <typename ELEM_T, int DIM>
 	class Vec{
 		private:
@@ -84,8 +93,8 @@ namespace math{
 			Vec(const VEC_TYPE &other);
 	
 			// Accessors 
-			inline ELEM_T& operator[](int index);
-			inline const ELEM_T& operator[](int index)const ;
+			inline ELEM_T& operator[](const int & index);
+			inline const ELEM_T& operator[](const int & index)const ;
 			inline ELEM_T magnitude()const;
 			inline ELEM_T magnitude2()const;
 			inline VEC_TYPE normal()const ;
@@ -102,8 +111,23 @@ namespace math{
 			inline VEC_TYPE cross(const VEC_TYPE & rhs)const;
 			inline VEC_TYPE operator+(const VEC_TYPE & rhs) const;
 			inline VEC_TYPE operator-(const VEC_TYPE & rhs)const;
-			inline VEC_TYPE operator*(ELEM_T scalar)const;
-			inline VEC_TYPE operator/(ELEM_T scalar)const;
+			inline VEC_TYPE operator*(const VEC_TYPE & scalar)const;
+			inline VEC_TYPE operator/(const VEC_TYPE & scalar)const;
+			inline VEC_TYPE operator+(const ELEM_T & scalar) const;
+			inline VEC_TYPE operator-(const ELEM_T & scalar)const;
+			inline VEC_TYPE operator*(const ELEM_T & scalar)const;
+			inline VEC_TYPE operator/(const ELEM_T & scalar)const;
+
+			inline VEC_TYPE operator+=(const VEC_TYPE & rhs);
+			inline VEC_TYPE operator-=(const VEC_TYPE & rhs);
+			inline VEC_TYPE operator*=(const VEC_TYPE & rhs);
+			inline VEC_TYPE operator/=(const VEC_TYPE & rhs);
+
+
+			inline VEC_TYPE operator+=(const ELEM_T & scalar);
+			inline VEC_TYPE operator-=(const ELEM_T & scalar);
+			inline VEC_TYPE operator*=(const ELEM_T & scalar);
+			inline VEC_TYPE operator/=(const ELEM_T & scalar);
 
 			inline bool operator==(const VEC_TYPE & rhs)const;
 			inline bool operator!=(const VEC_TYPE & rhs)const;
@@ -167,8 +191,8 @@ namespace math{
 			inline MAT_TYPE operator-()const;			
 			inline MAT_TYPE operator+(MAT_TYPE rhs)const;
 			inline MAT_TYPE operator-(MAT_TYPE rhs)const;
-			inline MAT_TYPE operator*(ELEM_T scalar)const;
-			inline MAT_TYPE operator/(ELEM_T scalar)const;
+			inline MAT_TYPE operator*(const ELEM_T & scalar)const;
+			inline MAT_TYPE operator/(const ELEM_T & scalar)const;
 			inline Vec<ELEM_T, DIM_H> solveSystem(const Vec<ELEM_T, DIM_H> &b)const;
 
 
@@ -201,15 +225,19 @@ namespace math{
 	}
 
 	template <typename ELEM_T, int DIM>
-	ELEM_T& VEC_TYPE::operator[](int index){
-		assert(index<DIM && index > -1);
+	ELEM_T& VEC_TYPE::operator[](const int & index){
+		if(index>=DIM || index < 0)
+			throw MathException("Vector[] index = " + std::to_string(index) +" out of bounds [0," + std::to_string(DIM) + ")");
+		
 		return _elements[index];
 	}
 
 
 	template <typename ELEM_T, int DIM>
-	const ELEM_T& VEC_TYPE::operator[](int index)const {
-		assert(index<DIM && index > -1);
+	const ELEM_T& VEC_TYPE::operator[](const int & index)const {
+		if(index>=DIM || index < 0)
+			throw MathException("Vector[] index = " + std::to_string(index) +" out of bounds [0," + std::to_string(DIM) + ")");
+		
 		return _elements[index];
 	}
 
@@ -287,6 +315,22 @@ namespace math{
 	}
 	
 	template <typename ELEM_T, int DIM>
+	VEC_TYPE VEC_TYPE::operator+(const ELEM_T & scalar) const{
+		Vec<ELEM_T, DIM> result;
+		for(int i =0; i < DIM; ++i)
+			result._elements[i] = _elements[i] + scalar;	
+		return result;
+	}
+
+	template <typename ELEM_T, int DIM>
+	VEC_TYPE VEC_TYPE::operator-(const ELEM_T & scalar)const{
+		Vec<ELEM_T, DIM> result;
+		for(int i =0; i < DIM; ++i)
+			result._elements[i] = _elements[i] - scalar;	
+		return result;
+	}
+
+	template <typename ELEM_T, int DIM>
 	VEC_TYPE VEC_TYPE::operator-()const{
 		Vec<ELEM_T, DIM> result;
 		for(int i =0; i < DIM; ++i)
@@ -295,7 +339,24 @@ namespace math{
 	}	
 
 	template <typename ELEM_T, int DIM>
-	VEC_TYPE VEC_TYPE::operator*(ELEM_T scalar)const{
+	VEC_TYPE VEC_TYPE::operator*(const VEC_TYPE & rhs)const{
+		VEC_TYPE result(*this);
+		for(int i =0; i < DIM; ++i)
+			result._elements[i] = _elements[i] * rhs[i];
+		return result;
+	}
+	
+	template <typename ELEM_T, int DIM>
+	VEC_TYPE VEC_TYPE::operator/(const VEC_TYPE & rhs)const{
+		VEC_TYPE result(*this);
+		for(int i =0; i < DIM; ++i)
+			result._elements[i] = _elements[i] / rhs[i];		
+		return result;
+	}
+	
+
+	template <typename ELEM_T, int DIM>
+	VEC_TYPE VEC_TYPE::operator*(const ELEM_T & scalar)const{
 		VEC_TYPE result(*this);
 		for(auto & e : result._elements)
 			e = e * scalar;	
@@ -303,13 +364,69 @@ namespace math{
 	}
 	
 	template <typename ELEM_T, int DIM>
-	VEC_TYPE VEC_TYPE::operator/(ELEM_T scalar)const{
+	VEC_TYPE VEC_TYPE::operator/(const ELEM_T & scalar)const{
 		VEC_TYPE result(*this);
 		for(auto & e : result._elements)
 			e = e/ scalar;
 		return result;
 	}
 	
+	template <typename ELEM_T, int DIM>
+	VEC_TYPE VEC_TYPE::operator+=(const VEC_TYPE & rhs){
+		for(int i =0; i < DIM; ++i)
+			_elements[i] +=rhs._elements[i];	
+		return (*this);
+	}
+
+	template <typename ELEM_T, int DIM>
+	VEC_TYPE VEC_TYPE::operator-=(const VEC_TYPE & rhs){
+		for(int i =0; i < DIM; ++i)
+			_elements[i] -= rhs._elements[i];	
+		return (*this);
+	}
+
+		template <typename ELEM_T, int DIM>
+	VEC_TYPE VEC_TYPE::operator*=(const VEC_TYPE & rhs){
+		for(int i =0; i < DIM; ++i)
+			_elements[i] *= rhs._elements[i];	
+		return (*this);
+	}
+
+		template <typename ELEM_T, int DIM>
+	VEC_TYPE VEC_TYPE::operator/=(const VEC_TYPE & rhs){
+		for(int i =0; i < DIM; ++i)
+			_elements[i] /= rhs._elements[i];	
+		return (*this);
+	}
+
+	template <typename ELEM_T, int DIM>
+	VEC_TYPE VEC_TYPE::operator+=(const ELEM_T & scalar){
+		for(int i =0; i < DIM; ++i)
+			_elements[i] +=scalar;	
+		return (*this);
+	}
+
+	template <typename ELEM_T, int DIM>
+	VEC_TYPE VEC_TYPE::operator-=(const ELEM_T & scalar){
+		for(int i =0; i < DIM; ++i)
+			_elements[i] -= scalar;	
+		return (*this);
+	}
+
+		template <typename ELEM_T, int DIM>
+	VEC_TYPE VEC_TYPE::operator*=(const ELEM_T & scalar){
+		for(int i =0; i < DIM; ++i)
+			_elements[i] *= scalar;	
+		return (*this);
+	}
+
+		template <typename ELEM_T, int DIM>
+	VEC_TYPE VEC_TYPE::operator/=(const ELEM_T & scalar){
+		for(int i =0; i < DIM; ++i)
+			_elements[i] /= scalar;	
+		return (*this);
+	}
+
 	template <typename ELEM_T, int DIM>
 	bool VEC_TYPE::operator==(const VEC_TYPE & rhs)const{
 		for(int i =0; i < DIM; ++i)
@@ -408,13 +525,17 @@ namespace math{
 
 	template <typename ELEM_T, int DIM_H, int DIM_W>
 	typename MAT_TYPE::Vec_T& MAT_TYPE::operator[](const int &index){
-		assert(index > -1 && index < DIM_H);
+		if(index>=DIM_H|| index < 0)
+			throw MathException("Matrix[] index = " + std::to_string(index) +" out of bounds [0," + std::to_string(DIM_H) + ")");
+		
 		return _elements[index];
 	}
 
 	template <typename ELEM_T, int DIM_H, int DIM_W>
 	const typename MAT_TYPE::Vec_T& MAT_TYPE::operator[](const int & index)const{
-		assert(index > -1 && index < DIM_H);
+		if(index>=DIM_H || index < 0)
+			throw MathException("Matrix[] index = " + std::to_string(index) +" out of bounds [0," + std::to_string(DIM_H) + ")");
+
 		return _elements[index];
 	}
 	
@@ -427,7 +548,8 @@ namespace math{
 	template <typename ELEM_T, int DIM_H, int DIM_W>
 	const Vec<ELEM_T, DIM_H> MAT_TYPE::col(const int & j) const{
 		//return col as vec
-		assert(j > -1 && j < DIM_W);
+		if(j >=DIM_W || j < 0)
+			throw MathException("Column index =" +  std::to_string(j) + "out of bounds:" + "[0," +std::to_string(DIM_W) +")");
 		Vec<ELEM_T, DIM_H> column;
 		for(int i =0; i < DIM_H; ++i){
 			column[i] = _elements[i][j];
@@ -501,7 +623,7 @@ namespace math{
 
 	}
 	template <typename ELEM_T, int DIM_H, int DIM_W>
-	MAT_TYPE MAT_TYPE::operator*(ELEM_T scalar)const{
+	MAT_TYPE MAT_TYPE::operator*(const ELEM_T & scalar)const{
 		MAT_TYPE result;
 		for(int i = 0; i < _elements.size(); ++i)
 			result[i] = _elements[i]*scalar;
@@ -509,7 +631,7 @@ namespace math{
 
 	}
 	template <typename ELEM_T, int DIM_H, int DIM_W>
-	MAT_TYPE MAT_TYPE::operator/(ELEM_T scalar)const{
+	MAT_TYPE MAT_TYPE::operator/(const ELEM_T & scalar)const{
 		MAT_TYPE result;
 		for(int i = 0; i < _elements.size(); ++i)
 			result[i] = _elements[i]/scalar;

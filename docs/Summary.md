@@ -71,6 +71,9 @@ Can be defined as geometry primitives, such as spheres, triangles, planes or box
 
 ## Sphere 
 ## Plane
+
+https://www.scratchapixel.com/lessons/3d-basic-rendering/minimal-ray-tracer-rendering-simple-shapes/ray-plane-and-ray-disk-intersection
+
 ## Triangle
 
 

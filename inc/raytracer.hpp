@@ -7,31 +7,27 @@
 
 class RayTracer{
 public:
-	RayTracer(
-		std::unique_ptr<Camera>& camera,
-		std::unique_ptr<Viewport>& viewport,
-		std::unique_ptr<Projection>& projection,
-		std::unique_ptr<Shader> & shader);
+	RayTracer(Camera* camera, Viewport* viewport, Projection* projection, Shader* shader);
 
-	void render(const Scene& scene, Image<HDR> & image );
+	void render(const Scene& scene, Image & image );
 	//returns true if hit
-	Vec3f trace(const Ray3f & viewRay, const Scene & scene, Intersection& intersection, int depth = 1); 
+	Color trace(const Ray3f & viewRay, const Scene & scene, Intersection& intersection, int depth = 1); 
 
-	void setBackgroundColor(Vec3f backgroundColor);
+	void setBackgroundColor(const Color &  backgroundColor);
 
-	void resetCamera(std::unique_ptr<Camera>& camera);
-	void resetViewport(std::unique_ptr<Viewport>& viewport);
-	void resetProjection(std::unique_ptr<Projection>& projection);
-	void resetShader(std::unique_ptr<Shader>& shader);
-
-	bool ready();
+	void setCamera(Camera* camera);
+	void setViewport(Viewport* viewport);
+	void setProjection(Projection* projection);
+	void setShader(Shader* shader);
+	bool valid();
 
 private:
-    std::unique_ptr<Camera> _camera;
-    std::unique_ptr<Viewport> _viewport;
-    std::unique_ptr<Projection> _projection;
-	std::unique_ptr<Shader> _shader;
-	Vec3f _backgroundColor; //colored if not hit
+	//nonowning pointers!
+    Camera * _camera;
+    Viewport * _viewport;
+    Projection * _projection;
+	Shader * _shader;
+	Color _backgroundColor; //colored if not hit
 };
 
 #endif
