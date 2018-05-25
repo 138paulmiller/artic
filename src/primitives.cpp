@@ -53,7 +53,7 @@ void Plane::checkIntersection(const Ray3f & viewRay, Intersection & intersection
 		return; //no intersection
 	
 	Vec3f l = _point - viewRay.origin();
-	double t  = l.dot(_normal) / look_proj;
+	double t  = _normal.dot(l) / look_proj;
 	if(t < 0.0) return;
 	Vec3f poi = viewRay.point(t);
 	intersection.update(this, poi, _normal, t); 

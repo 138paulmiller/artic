@@ -9,7 +9,7 @@ Light::~Light(){
 }
 
 
-Ray3f Light::makeShadowRay(const Vec3f & poi, double & intensity){
+Ray3f Light::makeShadowRay(const Vec3f & poi, double & distance){
 }
 
 int Light::numSamples(){
@@ -34,10 +34,11 @@ PointLight::PointLight(
 
 
 
-Ray3f PointLight::makeShadowRay(const Vec3f & poi, double & intensity){
+Ray3f PointLight::makeShadowRay(const Vec3f & poi, double & distance){
 	Vec3f dir = (_pos - poi).normal();
 	Vec3f origin = poi+dir*epsilon;
-	intensity = _intensity/pow((_pos-poi).magnitude(),2);
+	distance = (_pos-poi).magnitude();
+	//intensity = _intensity/pow((_pos-poi).magnitude(),2);
 
 	//set the intersection distance to be between poi and light
 	//poi may lay right on surface so will always intersect, move by epsilon toward light
@@ -65,17 +66,19 @@ RectangleLight::RectangleLight(
 
 
 
-Ray3f RectangleLight::makeShadowRay(const Vec3f & poi, double & intensity){
+Ray3f RectangleLight::makeShadowRay(const Vec3f & poi, double & distance){
 	//offset pos
 	Vec3f pos = _pos;
 	//move 
 	pos += _up * (_rng.random()*(_width/2.0)); 
 	pos += _right * (_rng.random()*(_depth/2.0)); 
+	distance = (pos-poi).magnitude();
+
 	Vec3f dir = (pos - poi).normal();
 	Vec3f origin = poi+dir;
 	//set the intersection distance to be between poi and light
 	//poi may lay right on surface so will always intersect, move by epsilon toward light
-	intensity = _intensity/pow((pos-poi).magnitude(),2);
+	//intensity = _intensity/pow((pos-poi).magnitude(),2);
 
 	return Ray3f(origin,  dir);
 }

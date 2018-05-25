@@ -1,0 +1,2 @@
+#!/bin/sh
+make rebuild ; time ./build/artic ; gnome-open OUT.ppm 

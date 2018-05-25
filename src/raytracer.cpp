@@ -61,18 +61,17 @@ Color RayTracer::trace(const Ray3f & ray, const Scene & scene, Intersection& int
 			for(auto const& light : scene.lights() ){
 				//shadowColor=_backgroundColor;//default not change
 				//set intersection distance to be between light and poi
-				distance = (light->position() - intersection.poi()).magnitude();
 				for(int i = 0; i < light->numSamples(); ++i){
 					shadowIntersection.reset();
 					shadowIntersection.setIgnoreObject(intersection.object());//prevent intersection of shadow ray with current intersecting object
-					shadowIntersection.setMaxDistance(distance);
 					//if soft shadow, gather multiple samples and set color to the average of intersection ambient and background
-					shadowRay = light->makeShadowRay(intersection.poi(), intensity);
+					shadowRay = light->makeShadowRay(intersection.poi(), distance);
+					shadowIntersection.setMaxDistance(distance);
 					//only run once (depth = 1)
 					castRay(shadowRay,scene, shadowIntersection);
 					//if no intersection, increase color amount
 					if(! shadowIntersection.valid()){
-						totalColor += color;
+						totalColor += color/distance;
 						//totalIntensity += intensity;
 					}
 				}
@@ -80,6 +79,7 @@ Color RayTracer::trace(const Ray3f & ray, const Scene & scene, Intersection& int
 			}
 			//avg 
 			color = (totalColor/totalNumSamples);// * totalIntensity/totalNumSamples ;
+			color.clamp(1);
 		}
 	}
 

@@ -24,10 +24,16 @@ public:
 		(*this)[0] = r;(*this)[1] = g; (*this)[2] = b;
 	}
 	//used to generate 0-RGB_DEPTH color components for PPM export
-	inline void getBytes(char & r, char & g, char  b)const{
-			r = (char)((*this)[0]*RGB_DEPTH);
-			g = (char)((*this)[1]*RGB_DEPTH);
-			b = (char)((*this)[2]*RGB_DEPTH);
+	inline void getBytes(char & r, char & g, char & b)const{
+		r = (char)((*this)[0]*RGB_DEPTH);
+		g = (char)((*this)[1]*RGB_DEPTH);
+		b = (char)((*this)[2]*RGB_DEPTH);
+	}
+
+	inline void clamp(const double & max){
+		if((*this)[0]>max)(*this)[0] = max;
+		if((*this)[1]>max)(*this)[1] = max;
+		if((*this)[2]>max)(*this)[1] = max;
 	}
 };
 

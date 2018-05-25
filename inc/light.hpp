@@ -16,7 +16,7 @@ public:
 		const double & intensity,
 		int numSamples);
 	virtual ~Light();
-	virtual Ray3f makeShadowRay(const Vec3f & poi,double & intensity);
+	virtual Ray3f makeShadowRay(const Vec3f & poi,double & distance);
 	double  intensity();
 	int numSamples();
 	const Vec3f & position();
@@ -31,7 +31,7 @@ public:
 	const Vec3f & position,
 	const Color & color,
 	const double & intensity);
-	Ray3f makeShadowRay(const Vec3f & poi,double & intensity);
+	Ray3f makeShadowRay(const Vec3f & poi, double & distance);
 };
 
 
@@ -58,7 +58,7 @@ public:
 	const double & depth,
 	int numSamples);
 	//returns a random ray from the rectangle sample space
-	Ray3f makeShadowRay(const Vec3f & poi,	double & intensity);
+	Ray3f makeShadowRay(const Vec3f & poi, double & distance);
 };
 
 
