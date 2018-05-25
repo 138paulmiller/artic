@@ -17,7 +17,7 @@ public:
 		int numSamples);
 	virtual ~Light();
 	virtual Ray3f makeShadowRay(const Vec3f & poi,double & distance);
-	double  intensity();
+	const double &  intensity();
 	int numSamples();
 	const Vec3f & position();
 	const Color & color();

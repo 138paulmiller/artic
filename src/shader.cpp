@@ -31,7 +31,7 @@ void BlinnPhongShader::shade(Color & color,
 	Vec3f lightAvg;
 	double shine, diffuse;
 	color.fill(0);
-	color += ka*_globalLight;
+	//color += _globalLight;
 	for(auto const & light : scene.lights()){
 		l =  (light->position() - intersection.poi()).normal();
 		h = (l+v).normal();
@@ -40,7 +40,7 @@ void BlinnPhongShader::shade(Color & color,
 		if(shine < 0) shine = 0;
 		if(diffuse < 0) diffuse = 0;
 		//add shade color
-		color += (kd * diffuse) * light->color()  +  ks * pow(shine, p);
+		color += (kd * diffuse) +  ks * pow(shine, p);
 		lightAvg += light->color();
 	}
 	lightAvg /= scene.lights().size();// avg ambient light color 

@@ -71,8 +71,8 @@ Color RayTracer::trace(const Ray3f & ray, const Scene & scene, Intersection& int
 					castRay(shadowRay,scene, shadowIntersection);
 					//if no intersection, increase color amount
 					if(! shadowIntersection.valid()){
-						totalColor += color/distance;
-						//totalIntensity += intensity;
+						//inverse square law light/dist^2
+						totalColor += color*light->intensity()/pow(distance,2);
 					}
 				}
 				totalNumSamples += light->numSamples();

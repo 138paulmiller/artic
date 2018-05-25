@@ -23,6 +23,9 @@ const Vec3f & Light::position(){
 const Color & Light::color(){
 	return _color;
 }
+const double & Light::intensity(){
+	return _intensity;
+}
 
 
 PointLight::PointLight(
@@ -38,7 +41,6 @@ Ray3f PointLight::makeShadowRay(const Vec3f & poi, double & distance){
 	Vec3f dir = (_pos - poi).normal();
 	Vec3f origin = poi+dir*epsilon;
 	distance = (_pos-poi).magnitude();
-	//intensity = _intensity/pow((_pos-poi).magnitude(),2);
 
 	//set the intersection distance to be between poi and light
 	//poi may lay right on surface so will always intersect, move by epsilon toward light
@@ -78,7 +80,6 @@ Ray3f RectangleLight::makeShadowRay(const Vec3f & poi, double & distance){
 	Vec3f origin = poi+dir;
 	//set the intersection distance to be between poi and light
 	//poi may lay right on surface so will always intersect, move by epsilon toward light
-	//intensity = _intensity/pow((pos-poi).magnitude(),2);
 
 	return Ray3f(origin,  dir);
 }

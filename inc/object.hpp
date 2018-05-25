@@ -28,7 +28,6 @@ struct Material{
 
 	Material(){}
 	Material(	
-	//	const Color &  base,		const Color & emission,
 		const Color & ambient,	const Color & diffuse,	const Color & specular,	
 		double shininess, double refraction, double reflection):
 	ambient(ambient),	diffuse(diffuse), specular(specular),	
