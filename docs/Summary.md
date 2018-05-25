@@ -10,6 +10,23 @@
 		let L be the position of the light source
 		set pixel to compute_color(P, L, N)
 
+## Usage
+Straighforward psuedocode outlining the usage of each componenet described above
+
+	camera(	{0, 0, 0},	//eye pos
+			{0, 0, -1},	//view dir
+			{0, 1, 0}));//up
+	viewport(400, 300,	// img resolution
+			  -1, 1,	//left right
+			   1, -1);	//top bottom
+	projection(new orthographic_projection());
+	shader(new flat_shader());
+	raytracer rt(camera, viewport, projection, shader);
+	scene scene(BACKGROUND_COLOR)
+	hdr_image img;
+	rt.render(img, the_scene)
+
+
 ## Camera
 
 The basic components of a camera are the eye, and camera frame. The camera itself is represented as a point in 3D space, called the eye. Each ray must be generated from the camera's orthonormal coordinate frame. This camera frame is a set of orthonormal vectors, u,v,w that describe the orientation of the camera. In order to construct this camera frame, we must provide an up vector, a direction vector, and an eye vector.
@@ -79,26 +96,13 @@ https://www.scratchapixel.com/lessons/3d-basic-rendering/minimal-ray-tracer-rend
 
 # Shading
 
-## Lights
 ## Flat
 ## Blinn-Phong 
 https://courses.cs.washington.edu/courses/cse457/11au/lectures/shading.pdf
-
-## Usage
-Straighforward psuedocode outlining the usage of each componenet described above
-
-	camera(	{0, 0, 0},	//eye pos
-			{0, 0, -1},	//view dir
-			{0, 1, 0}));//up
-	viewport(400, 300,	// img resolution
-			  -1, 1,	//left right
-			   1, -1);	//top bottom
-	projection(new orthographic_projection());
-	shader(new flat_shader());
-	raytracer rt(camera, viewport, projection, shader);
-	scene scene(BACKGROUND_COLOR)
-	hdr_image img;
-	rt.render(img, the_scene)
+## Shadows
+https://www.cs.unc.edu/~dm/UNC/COMP236/LECTURES/SoftShadows.pdf
+## Reflection 
+## Refraction
 
 
 # Credit 

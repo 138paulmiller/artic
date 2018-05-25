@@ -700,7 +700,6 @@ namespace math{
 
 	template <typename ELEM_T, int DIM_H, int DIM_W>
 	Vec<ELEM_T, DIM_H> MAT_TYPE::solveSystem(const Vec<ELEM_T, DIM_H> &b)const{
-		static_assert(isSquare(), "determinant: only defined for square matrices");
 		/*
 		Solves linear system Ax=b for x given A and b*/
 		Vec<ELEM_T, DIM_H> x; 

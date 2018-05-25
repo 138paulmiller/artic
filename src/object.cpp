@@ -2,11 +2,13 @@
 
 Intersection::Intersection(){
 	_object = nullptr;
+	_ignoreObject= nullptr;
+
 	_distance = std::numeric_limits<double>::infinity();
 }
 //checks if new intersection 
-void Intersection::update(Object * object, const Vec3f & poi, const Vec3f & normal, double distance){
-	if(distance < _distance){
+void Intersection::update(const Object * object, const Vec3f & poi, const Vec3f & normal, double distance){
+	if(distance < _distance && object != _ignoreObject){
 		_distance = distance;
 		_object= object;
 		_poi = poi;
@@ -15,10 +17,15 @@ void Intersection::update(Object * object, const Vec3f & poi, const Vec3f & norm
 }
 
 void Intersection::setMaxDistance(double maxDistance){
-	if(_distance > maxDistance){
-		_distance = maxDistance;
-	}
+	_distance = maxDistance;
+	
 }
+
+
+void Intersection::setIgnoreObject(const Object * object){
+	_ignoreObject= object;
+}
+
 
 double Intersection::distance(){
 	return _distance;
@@ -46,6 +53,7 @@ bool Intersection::valid()const{
 
 void Intersection::reset(){
 	_object = nullptr;
+	_ignoreObject= nullptr;
 	_distance = std::numeric_limits<double>::max();
 
 }

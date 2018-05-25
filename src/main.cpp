@@ -52,9 +52,41 @@ int main(){
 	scene.addObject(std::make_shared<Plane> (Vec3f({0, 1, 0}), Vec3f({0,-2,-10}) , &floor));
 	scene.addObject(std::make_shared<Plane> (Vec3f({0, 0, 1}), Vec3f({0,0,-10}) , &wall));
 
-	//scene.addLight(std::make_shared<Light> (Vec3f({-6.0, 3.6, -5.0}), Color(0.5,0.01,0.7)));
-	//scene.addLight(std::make_shared<Light> (Vec3f({+1.0, 5.0, -4.0}), Color(0.001,0.6,0.001)) );
-	scene.addLight(std::make_shared<Light> (Vec3f({0.0, 7.0, -9.0}), Color(1,0.99,0.99)) );
+	int numShadowSamples = 200; 
+
+	scene.addLight(std::make_shared<RectangleLight> (Vec3f({0, 6.0, -7.5}),  // pos
+												Vec3f({0.0, 0.0, 1.0}),  //up
+												Vec3f({0.0, 1.0, 0.0}),  //right
+												Color(0.5, 1.00, 1.00),
+												1.0, //intensity
+												1.0, 1.0, //width, depth
+												numShadowSamples));
+
+
+	scene.addLight(std::make_shared<RectangleLight> (Vec3f({0.0, 5.5, -5.4}),  // pos
+												Vec3f({0.0, 0.0, -1.0}),  //normal
+												Vec3f({0.0, 1.0, 0.0}),  //right
+												Color(1,0.99,0.99),
+												1.0, //intensity
+												2.0, 2.0, //width, depth
+												numShadowSamples));
+
+	scene.addLight(std::make_shared<RectangleLight> (Vec3f({0.0, 0.5, -5.4}),  // pos
+												Vec3f({0.0, 0.0, -1.0}),  //normal
+												Vec3f({0.0, 1.0, 0.0}),  //right
+												Color(1,0.99,0.99),
+												1.0, //intensity
+												2.5, 2.5, //width, depth
+												numShadowSamples));
+
+
+	// scene.addLight(std::make_shared<RectangleLight> (Vec3f({-5.0, 0.5, -5.4}),  // pos
+	// 											Vec3f({0.0, 0.0, -1.0}),  //normal
+	// 											Vec3f({0.0, 1.0, 0.0}),  //right
+	// 											Color(0,0,0.99),
+	// 											1.0, //intensity
+	// 											5.0, 5.0, //width, depth
+	// 											numShadowSamples));
 
 
 	Projection * projection =  new PerspectiveProjection(1);
