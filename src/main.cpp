@@ -26,19 +26,19 @@ int main(){
 				0.1//reflectivity
 				); 
 	Material floor(	
-				Color(0.0215, 	0.1745,	0.0215 	), 
-				Color(0.07568, 	0.61424, 0.07568), 
-				Color(0.633, 0.727811,	0.633), 
-				100.0,
+				Color(0.008, 	0.883,	1.00 	), 
+				Color(0.0568, 	0.1424, 0.7568), 
+				Color(0.933, 1.0,	0.999), 
+				10.0,
 				0.0, //refraction index
 				0.8//reflectivity
 				);
-
+	 	
 	Material wall(
-				Color(0.015, 	0.0335,	0.8215 	), 
-				Color(0.068, 	0.424, 0.568), 
-				Color(0.833, 0.927811,	0.933), 
-				50.0,
+				Color(0.17811, 	0.026959, 	0.626959), 
+				Color(0.43, 	0.5, 	0.0213), 
+				Color(0.94, 0.17, 	0.7), 
+				1000.0,
 				0.0,
 				0.8
 				);
@@ -52,12 +52,13 @@ int main(){
 	scene.addObject(std::make_shared<Plane> (Vec3f({0, 1, 0}), Vec3f({0,-2,-10}) , &floor));
 	scene.addObject(std::make_shared<Plane> (Vec3f({0, 0, 1}), Vec3f({0,0,-10}) , &wall));
 
-	int numShadowSamples = 200; 
+	int numShadowSamples = 10; 
 
-	scene.addLight(std::make_shared<RectangleLight> (Vec3f({0, 6.0, -7.5}),  // pos
+	scene.addLight(std::make_shared<RectangleLight> (
+												Vec3f({0, 6.0, -7.5}),  // pos
 												Vec3f({0.0, 0.0, 1.0}),  //up
 												Vec3f({0.0, 1.0, 0.0}),  //right
-												Color(0.5, 1.00, 1.00),
+												Color(1.0, 0.00, 0.00),
 												1.0, //intensity
 												1.0, 1.0, //width, depth
 												numShadowSamples));
@@ -66,27 +67,19 @@ int main(){
 	scene.addLight(std::make_shared<RectangleLight> (Vec3f({0.0, 5.5, -5.4}),  // pos
 												Vec3f({0.0, 0.0, -1.0}),  //normal
 												Vec3f({0.0, 1.0, 0.0}),  //right
-												Color(1,0.99,0.99),
+												Color(0.00,	0.00,	1.00),
 												1.0, //intensity
 												2.0, 2.0, //width, depth
 												numShadowSamples));
 
-	scene.addLight(std::make_shared<RectangleLight> (Vec3f({0.0, 0.5, -5.4}),  // pos
+
+	scene.addLight(std::make_shared<RectangleLight> (Vec3f({-3.0, 1.0, -3.4}),  // pos
 												Vec3f({0.0, 0.0, -1.0}),  //normal
 												Vec3f({0.0, 1.0, 0.0}),  //right
-												Color(1,0.99,0.99),
+												Color(0.0, 1.0, 0.00),
 												1.0, //intensity
-												2.5, 2.5, //width, depth
+												0.25, 0.25, //width, depth
 												numShadowSamples));
-
-
-	// scene.addLight(std::make_shared<RectangleLight> (Vec3f({-5.0, 0.5, -5.4}),  // pos
-	// 											Vec3f({0.0, 0.0, -1.0}),  //normal
-	// 											Vec3f({0.0, 1.0, 0.0}),  //right
-	// 											Color(0,0,0.99),
-	// 											1.0, //intensity
-	// 											5.0, 5.0, //width, depth
-	// 											numShadowSamples));
 
 
 	Projection * projection =  new PerspectiveProjection(1);
@@ -95,7 +88,7 @@ int main(){
 	Viewport * viewport =  new Viewport(img.width(), img.height(), -1,1,-1,1);
 //	Shader * shader = new FlatShader();
 	Shader * shader = new BlinnPhongShader();
-	shader->setGlobalLight(Color(0.9,0.9,1));
+	shader->setGlobalLight(Color(1.0,1.0,1));
 	
 	RayTracer rt(camera,viewport,projection, shader);
 
