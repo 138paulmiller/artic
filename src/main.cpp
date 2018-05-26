@@ -64,14 +64,14 @@ int main(){
 	scene.addObject(std::make_shared<Plane> (Vec3f({0, 0, 1}), Vec3f({0,-2,-10}) , &wall));
 	scene.addObject(std::make_shared<Plane> (Vec3f({-1, 0, 0}), Vec3f({5,-2,-10}) , &test));
 
-	int numShadowSamples = 10; 
+	int numShadowSamples = 25; 
 
 	scene.addLight(std::make_shared<RectangleLight> (
 												Vec3f({5, 6.0, -7.5}),  // pos
 												Vec3f({0.0, 0.0, 1.0}),  //up
 												Vec3f({0.0, 1.0, 0.0}),  //right
 												Color(1.0, 0.00, 0.00),
-												5, //intensity
+												1, //intensity
 												1.0, 1.0, //width, depth
 												numShadowSamples));
 
@@ -89,7 +89,7 @@ int main(){
 												Vec3f({0.0, 0.0, -1.0}),  //normal
 												Vec3f({0.0, 1.0, 0.0}),  //right
 												Color(0.0, 0.0, 1.00),
-												5, //intensity
+												25, //intensity
 												0.25, 0.25, //width, depth
 												numShadowSamples));
 
@@ -109,7 +109,7 @@ int main(){
 	rt.setBackgroundColor(Color(0.0,0.0,0));
 	if(rt.valid()){
 		rt.render(scene, img);
-		Image::exportPPM("OUT.ppm", img);
+		Image::exportPPM("OUT2.ppm", img);
 		std::cout << "OUT";
 	}
 	delete shader;

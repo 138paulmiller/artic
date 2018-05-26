@@ -33,7 +33,7 @@ public:
 	inline void clamp(const double & max){
 		if((*this)[0]>max)(*this)[0] = max;
 		if((*this)[1]>max)(*this)[1] = max;
-		if((*this)[2]>max)(*this)[1] = max;
+		if((*this)[2]>max)(*this)[2] = max;
 	}
 };
 

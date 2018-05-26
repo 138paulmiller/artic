@@ -43,7 +43,7 @@ void BlinnPhongShader::shade(Color & color,
 		color += (kd * diffuse) +  ks * pow(shine, p);
 		lightAvg += light->color();
 	}
-	lightAvg /= scene.lights().size();// avg ambient light color 
+	//lightAvg /= scene.lights().size();// avg ambient light color 
 	color += ka*lightAvg;
 	color.clamp(1);
 }
