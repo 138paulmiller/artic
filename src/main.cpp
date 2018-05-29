@@ -9,14 +9,14 @@ int main(int argc, char ** argv){
 	Args args(argc, argv);
 	std::string outfile = args.getString( "-out", "images/out.ppm");
 	//recursion depth
-	int depth = args.getInt("-depth", 25);
+	int depth = args.getInt("-depth", 3);
 
-	int numSamples = args.getInt("-depth", 10);
+	int numSamples = args.getInt("-sample", 2);
 	
 	std::vector<float> params;
 	args.getFloats(params, "-material", ',');
 	
-	Image img(640, 540);
+	Image img(540, 540);
 	//ADD SCENE LOADER to read the scene data from a file (possibly XML)
 	//blinn-phong-phong coeff
 	
@@ -24,10 +24,9 @@ int main(int argc, char ** argv){
 		Color(0.24725, 0.1995, 0.0745),//ambient 
 		Color(0.75164, 0.60648, 0.22648), //diffuse
 		Color(0.628281, 0.555802, 0.366065), //specular
-		128*0.4, //shininess	
-		0.23, //transparency
-		0.4, //refraction index
-		0.1//reflectivity
+		128*0.4, //shininess
+		1.3, //refraction index
+		0.0//reflectivity
 		); 
 
 	Material ruby(
@@ -35,9 +34,8 @@ int main(int argc, char ** argv){
 		Color( 	0.61424, 	0.04136, 	0.04136), //diffuse
 		Color(0.727811, 	0.626959, 	0.626959), //specular
 		128*0.6,//shininess
-		0.99, //transparency
-		0.4, //refraction index
-		0.1//reflectivity
+		0.0, //refraction index
+		0.5//reflectivity
 		); 
 
 	Material test(
@@ -45,9 +43,8 @@ int main(int argc, char ** argv){
 		Color(0.01424, 	0.4136, 	0.4136), //diffuse
 		Color(1.0, 	1.0, 	1.0), //specular
 		128*0.995,//shininess
-		0.12, //transparency
-		0.4, //refraction index
-		0.01//reflectivity
+		1.2, //refraction index
+		0.0//reflectivity
 		); 
 
 	Material floor(	
@@ -55,9 +52,8 @@ int main(int argc, char ** argv){
 		Color( 0.0012, 	0.00980392, 	0.1980392), 
 		Color(0.80196078, 0.771078, 0.70196078), 
 		128*.25, //shininess
-		0.5, //transparency
 		0.0, //refraction index
-		0.8//reflectivity
+		0.999//reflectivity
 		);
 	 	
 	Material wall(
@@ -65,15 +61,11 @@ int main(int argc, char ** argv){
 		Color(0.43, 	0.5, 	0.0213), 
 		Color(0.94, 0.17, 	0.7), 
 		128*.10, //shininess
-		0.0, //transparency
 		0.0, //refraction index
-		0.08	//reflectivity
+		0.00	//reflectivity
 		);
 
 	Scene scene;
-
- 
-
 	scene.addLight(std::make_shared<RectangleLight> (
 		Vec3f({5, 6.0, -7.5}),  // pos
 		Vec3f({0.0, 0.0, 1.0}),  //up
@@ -84,14 +76,14 @@ int main(int argc, char ** argv){
 		numSamples));
 
 
-	// scene.addLight(std::make_shared<RectangleLight> (
-	// 	Vec3f({0.0, 0, 0}),  // pos
-	// 	Vec3f({0.0, 0.0, -1.0}),  //normal
-	// 	Vec3f({0.0, 1.0, 0.0}),  //right
-	// 	Color(0.00,	1.00,	0.00),
-	// 	10, //intensity
-	// 	2.0, 2.0, //width, depth
-	// 	numSamples));
+	scene.addLight(std::make_shared<RectangleLight> (
+		Vec3f({0.0, 0, 1}),  // pos
+		Vec3f({0.0, 0.0, -1.0}),  //normal
+		Vec3f({0.0, 1.0, 0.0}),  //right
+		Color(0.00,	1.00,	0.00),
+		10, //intensity
+		2.0, 2.0, //width, depth
+		numSamples));
 
 
 	scene.addLight(std::make_shared<RectangleLight> (
@@ -110,7 +102,7 @@ int main(int argc, char ** argv){
 	scene.addObject(std::make_shared<Plane> (Vec3f({0.0, 1, 0}), Vec3f({0,-2,-10}) , &floor));
 	scene.addObject(std::make_shared<Plane> (Vec3f({0, 0, 1}), Vec3f({0,-2,-10}) , &wall));
 	scene.addObject(std::make_shared<Plane> (Vec3f({-1, 0, 0}), Vec3f({5,-2,-10}) , &test));
-	scene.addObject(std::make_shared<Plane> (Vec3f({0, 0, -1}), Vec3f({0,0,2}) , &test));
+	scene.addObject(std::make_shared<Plane> (Vec3f({0, 0, -1}), Vec3f({0,0,2}) , &gold));
 	Projection * projection =  new PerspectiveProjection(1);
 	//Projection * projection =  new OrthographicProjection();
 	Camera  *camera = new Camera({0,2,0}, //pos

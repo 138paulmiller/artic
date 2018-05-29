@@ -23,18 +23,16 @@ struct Material{
 	Color diffuse;
 	Color specular;
 	double shininess;
-	double transparency;
-	double refraction;
+	double refractionIndex;
 	double reflectivity;
 
 	Material(){}
 	Material(	
 		const Color & ambient,	const Color & diffuse,	const Color & specular,	
-		const double & shininess,	const double & transparency, 
-		const double & refraction, 	const double & reflectivity):
+		const double & shininess, const double & refractionIndex, const double & reflectivity):
 	ambient(ambient),	diffuse(diffuse), specular(specular),	
-	shininess(shininess),	transparency(transparency),
-	refraction(refraction), reflectivity(reflectivity){}
+	shininess(shininess),	
+	refractionIndex(refractionIndex), reflectivity(reflectivity){}
 
 };
 

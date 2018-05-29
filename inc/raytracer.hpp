@@ -5,6 +5,7 @@
 #include "shader.hpp"
 #include "image.hpp"
 #define DEFAULT_DEPTH 2
+#define BIAS 0.001
 class RayTracer{
 private:
 	//nonowning pointers!
@@ -36,7 +37,11 @@ protected:
 	//
 	void computeShadowColor(Color & color, const Ray3f & ray, const Scene & scene, Intersection& intersection, int depth);
 	void computeReflectColor(Color & color, const Ray3f & ray, const Scene & scene, Intersection& intersection, int depth);
-	void computeRefractColor(Color & color, const Ray3f & ray, const Scene & scene, Intersection& intersection, int depth);
+	void computeRefractColor(Color & color, const Ray3f & ray, const Scene & scene, Intersection& intersection,const double & kr, int depth);
+
+	double fresnel(const Vec3f &dir, const Vec3f &normal, const double &index);
+	Vec3f refract(const Vec3f &dir, const Vec3f &normal, const double &index);
+
 
 };
 
