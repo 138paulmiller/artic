@@ -20,6 +20,8 @@ public:
 
 	bool valid();
 
+
+
 	void setBackgroundColor(const Color &  backgroundColor);
 	void setCamera(Camera* camera);
 	void setViewport(Viewport* viewport);
@@ -31,6 +33,11 @@ protected:
 	void castRay(const Ray3f & ray, const Scene & scene, Intersection& intersection);
 	//determines color recursively
 	Color trace(const Ray3f & ray, const Scene & scene, Intersection& intersection, int depth); 
+	//
+	void computeShadowColor(Color & color, const Ray3f & ray, const Scene & scene, Intersection& intersection, int depth);
+	void computeReflectColor(Color & color, const Ray3f & ray, const Scene & scene, Intersection& intersection, int depth);
+	void computeRefractColor(Color & color, const Ray3f & ray, const Scene & scene, Intersection& intersection, int depth);
+
 };
 
 #endif

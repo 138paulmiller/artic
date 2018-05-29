@@ -1,2 +1,6 @@
 #!/bin/sh
-make rebuild ; time ./build/artic ; gnome-open OUT.ppm 
+FILE="$1";
+if [ ! -z "$1" ]; then  FILE="images/out.ppm"; fi
+make rebuild; 
+time ./build/artic -out "$1";  
+gnome-open "$1"; fi

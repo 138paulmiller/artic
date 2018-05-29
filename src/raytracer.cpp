@@ -11,6 +11,32 @@ RayTracer::RayTracer(
 	_shader(shader){
 }
 
+void RayTracer::setBackgroundColor(const Color & backgroundColor){
+	_backgroundColor = backgroundColor;
+}
+
+void RayTracer::setCamera(Camera* camera){
+	_camera = camera;
+}
+
+void RayTracer::setViewport(Viewport* viewport){
+	_viewport = viewport;
+}
+void RayTracer::setProjection(Projection* projection){
+	_projection = projection;
+}
+
+void RayTracer::setShader(Shader* shader){
+	_shader = shader;
+}
+
+
+bool RayTracer::valid(){
+	return _shader != nullptr 
+		&& _projection != nullptr 
+		&& _camera != nullptr 
+		&& _viewport != nullptr;
+}
 
 void RayTracer::render(const Scene& scene, Image & image, int depth ){
 	if(!valid()) return;
@@ -45,75 +71,61 @@ Color RayTracer::trace(const Ray3f & ray, const Scene & scene, Intersection& int
 		if(intersection.valid()){
 			//trace the shadow, reflect and refract rays depending on material
 			//shadow ray is from poi to light, if any lights produce shadow 
-			// SEE : https://www.cs.unc.edu/~dm/UNC/COMP236/LECTURES/SoftShadows.pdf
 			_shader->shade(color, *_camera, scene, intersection);
-
-			Ray3f shadowRay;
-			Intersection shadowIntersection;
-			Color totalColor(color);//default not change
-			Color shadowColor(_backgroundColor);//default not change
-
-
-			double numSamples = 0;
-			double distance = 0;
-			double totalIntensity=0, intensity;
-			int  totalNumSamples = 0;
-			for(auto const& light : scene.lights() ){
-				//shadowColor=_backgroundColor;//default not change
-				//set intersection distance to be between light and poi
-				for(int i = 0; i < light->numSamples(); ++i){
-					shadowIntersection.reset();
-					shadowIntersection.setIgnoreObject(intersection.object());//prevent intersection of shadow ray with current intersecting object
-					//if soft shadow, gather multiple samples and set color to the average of intersection ambient and background
-					shadowRay = light->makeShadowRay(intersection.poi(), distance);
-					shadowIntersection.setMaxDistance(distance);
-					//only run once (depth = 1)
-					castRay(shadowRay,scene, shadowIntersection);
-					//if no intersection, increase color amount
-					if(! shadowIntersection.valid()){
-						//inverse square law 
-						totalColor += (color*light->intensity()/pow(distance,2));
-					}
-				}
-				totalNumSamples += light->numSamples();
-			}
-			//avg 
-			color = (totalColor/totalNumSamples);// * totalIntensity/totalNumSamples ;
-			color.clamp(1);
+			computeReflectColor(color, ray, scene, intersection, depth);
+			//computeRefractColor(color, ray, scene, intersection, depth);
+			computeShadowColor(color, ray, scene, intersection, depth);
 		}
 	}
-
+	color.clamp(1);
 	return color;
 }
 
+void RayTracer::computeReflectColor(Color & color, const Ray3f & ray, const Scene & scene, Intersection& intersection, int depth){
+	Ray3f reflectRay;
+	Intersection reflectIntersection;
+	reflectRay.setOrigin(intersection.poi()+intersection.normal()*0.001);
+	reflectRay.setDirection(ray.direction() - intersection.normal() * 2 * ray.direction().dot(intersection.normal()));
+	reflectIntersection.setIgnoreObject(intersection.object());
+	//compute reflect ray and retrace!, grab the color
+	Color reflectColor = trace(reflectRay, scene, reflectIntersection, depth-1);
+	double r = intersection.object()->material()->reflectivity;
+	color = color +  reflectColor * r;
 
-
-void RayTracer::setBackgroundColor(const Color & backgroundColor){
-	_backgroundColor = backgroundColor;
 }
 
+void RayTracer::computeRefractColor(Color & color, const Ray3f & ray, const Scene & scene, Intersection& intersection, int depth){
 
-void RayTracer::setCamera(Camera* camera){
-	_camera = camera;
 }
 
-void RayTracer::setViewport(Viewport* viewport){
-	_viewport = viewport;
+void RayTracer::computeShadowColor(Color & color, const Ray3f & ray, const Scene & scene, Intersection& intersection, int depth){
+	// SEE : https://www.cs.unc.edu/~dm/UNC/COMP236/LECTURES/SoftShadows.pdf
+	Ray3f shadowRay;
+	Intersection shadowIntersection;
+	Color totalColor(color);//default not change
+	double numSamples = 0;
+	double distance = 0;
+	int  totalNumSamples = 0;
+	for(auto const & light : scene.lights() ){
+		//shadowColor=_backgroundColor;//default not change
+		//set intersection distance to be between light and poi
+		for(int i = 0; i < light->numSamples(); ++i){
+			shadowIntersection.reset();
+			shadowIntersection.setIgnoreObject(intersection.object());//prevent intersection of shadow ray with current intersecting object
+			//if soft shadow, gather multiple samples and set color to the average of intersection ambient and background
+			shadowRay = light->makeShadowRay(intersection.poi()+intersection.normal()*0.001, distance);
+			shadowIntersection.setMaxDistance(distance);
+			//only run once (depth = 1)
+			castRay(shadowRay,scene, shadowIntersection);
+			//if no intersection, increase color amount
+			if(! shadowIntersection.valid()){
+				//inverse square law 
+				totalColor += (color*light->intensity()/pow(distance,2));
+			}
+		}
+		totalNumSamples += light->numSamples();
+	}
+	//avg 
+	color = (totalColor/totalNumSamples);// * totalIntensity/totalNumSamples ;
 }
-void RayTracer::setProjection(Projection* projection){
-	_projection = projection;
-}
-
-void RayTracer::setShader(Shader* shader){
-	_shader = shader;
-}
-
-
-bool RayTracer::valid(){
-	return _shader != nullptr 
-		&& _projection != nullptr 
-		&& _camera != nullptr 
-		&& _viewport != nullptr;
-}
-
 
