@@ -36,11 +36,10 @@ protected:
 	Color trace(const Ray3f & ray, const Scene & scene, Intersection& intersection, int depth); 
 	//
 	void computeShadowColor(Color & color, const Ray3f & ray, const Scene & scene, Intersection& intersection, int depth);
-	void computeReflectColor(Color & color, const Ray3f & ray, const Scene & scene, Intersection& intersection, int depth);
-	void computeRefractColor(Color & color, const Ray3f & ray, const Scene & scene, Intersection& intersection,const double & kr, int depth);
+	Vec3f reflect(const Vec3f & dir, const Vec3f & normal);
 
-	double fresnel(const Vec3f &dir, const Vec3f &normal, const double &index);
 	Vec3f refract(const Vec3f &dir, const Vec3f &normal, const double &index);
+	double fresnel(const Vec3f &dir, const Vec3f &normal, const double &index);
 
 
 };

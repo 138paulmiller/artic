@@ -66,58 +66,83 @@ Color RayTracer::trace(const Ray3f & ray, const Scene & scene, Intersection& int
 	//recursively follow the ray
 	//if hit
 	Color color(_backgroundColor);
-		castRay(ray, scene, intersection);
-		if(intersection.valid()){
-			//trace the shadow, reflect and refract rays depending on material
-			//shadow ray is from poi to light, if any lights produce shadow 
-			_shader->shade(color, *_camera, scene, intersection);
-			if(depth > 0 ){
-				Color reflectColor(0), refractColor(0);
-				double refl = intersection.object()->material()->reflectivity;
-				double index = intersection.object()->material()->refractionIndex;
-				//only relfective
-				if(!almost_equal(0.0, refl)){
-					computeReflectColor(reflectColor, ray, scene, intersection, depth);
-					color = color * (1-refl) + reflectColor*refl;
+	castRay(ray, scene, intersection);
+	if(intersection.valid()){
+		//trace the shadow, reflect and refract rays depending on material
+		//shadow ray is from poi to light, if any lights produce shadow 
+		if(depth > 0 ){
+			switch(intersection.object()->material()->type)
+			{
+				case NONDIELECTRIC:
+				{
+					const NonDielectricMaterial * material = dynamic_cast<const NonDielectricMaterial*>(intersection.object()->material());
+					double refl = material->reflectivity;
+					_shader->shade(color, *_camera, scene, intersection, material);
+					// only get the shadow color
+					//if relfective
+					if(! almost_equal(0.0, refl)){
+						Ray3f reflectRay;
+						Intersection reflectIntersection;
+						reflectRay.setOrigin(intersection.poi() - intersection.normal()*BIAS);
+						reflectRay.setDirection(reflect(ray.direction(), intersection.normal()).normal());
+						reflectIntersection.setIgnoreObject(intersection.object()); //prevent self intersection
+						Color reflectColor = trace(reflectRay, scene, reflectIntersection, depth-1);
+						color = color * (1-refl) + reflectColor*refl;
+					}
+					break;
 				}
-				else if(!almost_equal(0.0, index)){
+
+				case DIELECTRIC:
+				{
+					Ray3f refractRay;
+					Intersection refractIntersection;
+					Ray3f reflectRay;
+					Intersection reflectIntersection;
+					Color reflectColor(0), refractColor(0);
+					const DielectricMaterial * material = dynamic_cast<const DielectricMaterial*>(intersection.object()->material());
+
+					double index = material->refractionIndex;
 					float kr = fresnel(ray.direction(), intersection.normal(), index);
-					computeReflectColor(reflectColor, ray, scene, intersection, depth);
-					computeRefractColor(refractColor, ray, scene, intersection, kr, depth);
-					color = refractColor * (1- kr) + reflectColor * kr;  
+					// compute refraction if it is not a case of total internal reflection
+					bool isOut = ray.direction().dot(intersection.normal()) < 0;
+					if (kr < 1) 
+					{
+						//if any between orig and normal is less than zero, ray is cast inside object
+						if(isOut)
+							refractRay.setOrigin(intersection.poi() - intersection.normal()*BIAS);
+						else
+							refractRay.setOrigin(intersection.poi() + intersection.normal()*BIAS);
+						refractRay.setDirection(refract(ray.direction(), intersection.normal(), index).normal());
+						//compute reflect ray and retrace!, grab the color
+						refractColor = trace(refractRay, scene, refractIntersection, depth-1);	
+
+					}
+					if(isOut)
+						reflectRay.setOrigin(intersection.poi() + intersection.normal()*BIAS);
+					else
+						reflectRay.setOrigin(intersection.poi() - intersection.normal()*BIAS);
+					reflectRay.setDirection(reflect(ray.direction(), intersection.normal()).normal());
+					reflectIntersection.setIgnoreObject(intersection.object()); //prevent self intersection
+
+					reflectColor = trace(reflectRay, scene, reflectIntersection, depth-1);
+					
+					color = reflectColor * kr + refractColor * (1-kr);  
+
+					break;
 				}
+				default: break;
 			}
-			computeShadowColor(color, ray, scene, intersection, 0); //not recusive
+			computeShadowColor(color, ray, scene, intersection, 0); //not recursive		
+		}
 	}
 	color.clamp(1);
 	return color;
 }
 
-void RayTracer::computeReflectColor(Color & color, const Ray3f & ray, const Scene & scene, Intersection& intersection, int depth){
-	Ray3f reflectRay;
-	Intersection reflectIntersection;
-	reflectRay.setOrigin(intersection.poi() - intersection.normal()*BIAS);
-	reflectRay.setDirection(ray.direction() - intersection.normal() * 2 * ray.direction().dot(intersection.normal()));
-	reflectIntersection.setIgnoreObject(intersection.object());
-	color = trace(reflectRay, scene, reflectIntersection, depth-1);
+Vec3f  RayTracer::reflect(const Vec3f & dir, const Vec3f & normal){
+	return dir - normal * 2 * dir.dot(normal);
 }
 
-void RayTracer::computeRefractColor(Color & color, const Ray3f & ray, const Scene & scene, Intersection& intersection, const double& kr, int depth){
-	Ray3f refractRay;
-	Intersection refractIntersection;
-	// compute refraction if it is not a case of total internal reflection
-	if (kr < 1) {
-		double thetaA = ray.direction().dot(intersection.normal());
-		//if any between orig and normal is less than zero, ray is cast inside object
-		if(thetaA < 0)
-			refractRay.setOrigin(intersection.poi() - intersection.normal()*BIAS);
-		else
-			refractRay.setOrigin(intersection.poi() + intersection.normal()*BIAS);
-		refractRay.setDirection(refract(ray.direction(), intersection.normal(), intersection.object()->material()->refractionIndex).normal());
-		//compute reflect ray and retrace!, grab the color
-		color = trace(refractRay, scene, refractIntersection, depth-1);	
-	} 
-}
 
 void RayTracer::computeShadowColor(Color & color, const Ray3f & ray, const Scene & scene, Intersection& intersection, int depth){
 	// SEE : https://www.cs.unc.edu/~dm/UNC/COMP236/LECTURES/SoftShadows.pdf
@@ -156,29 +181,31 @@ Vec3f RayTracer::refract(const Vec3f &dir, const Vec3f &normal, const double &in
 	double cosi = dir.dot(normal);
 	if(cosi < -1) cosi = -1;
 	else if(cosi > 1) cosi = 1;
-	double etai, etat;
+	float etai,etat;
 	Vec3f n = normal;
 	if (cosi < 0) { 
+		cosi = -cosi; 
 		etai = 1;
 		etat = index;
-		cosi = -cosi; 
-	} else {
+	} else{ 
 		etai = index;
 		etat = 1;
-	 	n= -normal; 
-	 }
-	double eta = etai / etat;
-	double k = 1 - eta * eta * (1 - cosi * cosi);
-	return k < 0 ? 0 : dir * dir + n*(eta * cosi - sqrtf(k));
+		n= -normal; 
+	}
+	
+
+	float eta = etai / etat;
+	float k = 1 - eta * eta * (1 - cosi * cosi);
+	return k < 0 ? 0 : ( dir * eta) + n*(eta * cosi - sqrt(k)); 
 }
 
 double RayTracer::fresnel(const Vec3f &dir, const Vec3f &normal, const double &index)
 {
-	//Credit to scratchapixel.com
-	double kr;
+	double kr = 0;
 	double cosi = dir.dot(normal);
 	if(cosi < -1) cosi = -1;
 	else if(cosi > 1) cosi = 1;
+
 	double etai, etat;
 	if (cosi > 0) { 
 		etai = index;
@@ -186,24 +213,24 @@ double RayTracer::fresnel(const Vec3f &dir, const Vec3f &normal, const double &i
 	}else{
 		etai = 1;
 		etat = index;
-	}
-	//sini = result of Snell's law
-	double sint = 1 - cosi * cosi;
-	if(sint < 0) sint = 0;
-	sint =  etai / etat *  sqrtf(sint);
 
+	}
+	// Compute sini using Snell's law
+	double sint = 1 - cosi * cosi;
+	if(sint< 0) sint  = 0;
+	sint = etai / etat * sqrt(sint);
 	// Total internal reflection
 	if (sint >= 1) {
 		kr = 1;
 	}
 	else {
-		double cost = 1 - sint * sint;
-		if(cosi < 0) cosi = 0;
-			cost = sqrtf(cost);
-			cosi = fabsf(cosi);
-			double Rs = ((etat * cosi) - (etai * cost)) / ((etat * cosi) + (etai * cost));
-			double Rp = ((etai * cosi) - (etat * cost)) / ((etai * cosi) + (etat * cost));
-			kr = (Rs * Rs + Rp * Rp) / 2;
-	}
+		double cost =  1 - sint * sint;
+		if(cost < 0) cost = 0;
+		cost = sqrt(cost);
+		cosi = fabs(cosi);
+		double Rs = ((etat * cosi) - (etai * cost)) / ((etat * cosi) + (etai * cost));
+		double Rp = ((etai * cosi) - (etat * cost)) / ((etai * cosi) + (etat * cost));
+		kr = (Rs * Rs + Rp * Rp) / 2;
+	} 
 	return kr;
 } 

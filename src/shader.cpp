@@ -4,24 +4,26 @@
 void FlatShader::shade(Color & color, 
 						const Camera& camera, 
 						const Scene& scene, 
-						const Intersection & intersection){
-	color = intersection.material()->ambient;	
+						const Intersection & intersection,
+						const NonDielectricMaterial * material){
+	color = material->ambient;	
 }
 
 
 void BlinnPhongShader::shade(Color & color, 
 									const Camera& camera, 
 									const Scene& scene, 
-									const Intersection & intersection){
+									const Intersection & intersection,
+									const NonDielectricMaterial * material){
 
 	static RNG rng(-1,1);
 	//L = ka Ia + SUM(1,N) [kd Ii max(0, dot(n,l_i)) + ks Ii max(0, dot(n,h_i)^p]
 	//removed to speed up, used as reference
 	//notice ka and light are RGB so multiply does component-wise mult for ka and light RGB values
-	Color ka = intersection.material()->ambient;
-	Color kd = intersection.material()->diffuse;
-	Color ks  = intersection.material()->specular;
-	double p = intersection.material()->shininess; 
+	Color ka = material->ambient;
+	Color kd = material->diffuse;
+	Color ks  =material->specular;
+	double p = material->shininess; 
 
 
 	Vec3f n = intersection.normal();

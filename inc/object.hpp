@@ -11,10 +11,40 @@ class Object;
 class Material;
 class Intersection;
 
+enum MaterialType{
+	NONE=0,
+	DIELECTRIC, 		//transparent
+	NONDIELECTRIC 		//nontransparent
+};	
+
 /*************************************** Material *******************************************/
+struct Material{
+	//Box for object material coefficients and colors
+	// Color base;//surface color
+	// Color emission;//color emitted
+	//blinn-phong-phong coeff
+	MaterialType type;
+	Material(const MaterialType &type=NONE):type(type){}
+	virtual ~Material(){}
+};
+
+struct DielectricMaterial: public Material{
 // For material blinn-phong coefficients see 
 //	http://devernay.free.fr/cours/opengl/materials.html
-struct Material{
+	//Box for object material coefficients and colors
+	// Color base;//surface color
+	// Color emission;//color emitted
+	//blinn-phong-phong coeff
+	double refractionIndex;
+
+	DielectricMaterial(	const double & refractionIndex):
+	Material(DIELECTRIC),	
+	refractionIndex(refractionIndex){}
+};
+
+struct NonDielectricMaterial: public Material{
+// For material blinn-phong coefficients see 
+//	http://devernay.free.fr/cours/opengl/materials.html
 	//Box for object material coefficients and colors
 	// Color base;//surface color
 	// Color emission;//color emitted
@@ -23,18 +53,18 @@ struct Material{
 	Color diffuse;
 	Color specular;
 	double shininess;
-	double refractionIndex;
 	double reflectivity;
 
-	Material(){}
-	Material(	
+	NonDielectricMaterial(	
 		const Color & ambient,	const Color & diffuse,	const Color & specular,	
-		const double & shininess, const double & refractionIndex, const double & reflectivity):
-	ambient(ambient),	diffuse(diffuse), specular(specular),	
-	shininess(shininess),	
-	refractionIndex(refractionIndex), reflectivity(reflectivity){}
-
+		const double & shininess, const double & reflectivity):
+	Material(NONDIELECTRIC),
+	ambient(ambient), diffuse(diffuse), specular(specular),	
+	shininess(shininess), reflectivity(reflectivity){}
 };
+
+
+
 
 
 /*************************************** Object *******************************************/

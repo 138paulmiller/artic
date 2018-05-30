@@ -18,7 +18,7 @@ github.com/138paulmiller
 namespace math{
 /******************************************** Forward Decls *********************************************/
 	static long precision = 10;			//variable 
-	static double epsilon = 0.0001f;			 
+	static double epsilon = 0.001f;			 
 	template <typename ELEM_T, int DIM>
 	class Vec;
 	template <typename ELEM_T, int DIM_H, int DIM_W>
