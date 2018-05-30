@@ -1,4 +1,4 @@
-#include "light.hpp"
+#include "light.h"
 
 Light::Light(const Vec3f & position, const Color & color, const double & intensity, int numSamples)
 :_pos(position), _color(color),_intensity(intensity),_numSamples(numSamples){
@@ -10,6 +10,7 @@ Light::~Light(){
 
 
 Ray3f Light::makeShadowRay(const Vec3f & poi, double & distance){
+	return{};
 }
 
 int Light::numSamples(){

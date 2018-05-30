@@ -1,4 +1,4 @@
-#include "object.hpp"
+#include "object.h"
 
 Intersection::Intersection(){
 	_object = nullptr;

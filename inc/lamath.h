@@ -2,7 +2,7 @@
 #define MATH_HPP
 /*	
 
-math library for raytracing  
+Linear Algerbra math library 
 github.com/138paulmiller
 
 */
@@ -14,8 +14,9 @@ github.com/138paulmiller
 #include <assert.h>
 #include <math.h>
 #include <iomanip>
+#include <string>
 
-namespace math{
+namespace lamath{
 /******************************************** Forward Decls *********************************************/
 	static long precision = 10;			//variable 
 	static double epsilon = 0.001f;			 

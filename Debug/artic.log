@@ -1,0 +1,11 @@
+﻿  main.cpp
+c:\users\138\desktop\artic\inc\color.h(46): warning C4244: '=': conversion from 'double' to 'char', possible loss of data
+c:\users\138\desktop\artic\inc\color.h(47): warning C4244: '=': conversion from 'double' to 'char', possible loss of data
+c:\users\138\desktop\artic\inc\color.h(48): warning C4244: '=': conversion from 'double' to 'char', possible loss of data
+c:\users\138\desktop\artic\inc\image.h(36): warning C4244: '=': conversion from 'double' to 'char', possible loss of data
+c:\users\138\desktop\artic\inc\image.h(37): warning C4244: '=': conversion from 'double' to 'char', possible loss of data
+c:\users\138\desktop\artic\inc\image.h(38): warning C4244: '=': conversion from 'double' to 'char', possible loss of data
+c:\users\138\desktop\artic\inc\object.h(21): warning C4099: 'Material': type name first seen using 'class' now seen using 'struct'
+  c:\users\138\desktop\artic\inc\object.h(21): note: see declaration of 'Material'
+  artic.vcxproj -> C:\Users\138\Desktop\artic\Debug\artic.exe
+  artic.vcxproj -> C:\Users\138\Desktop\artic\Debug\artic.pdb (Partial PDB)

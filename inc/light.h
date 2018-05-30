@@ -1,7 +1,7 @@
 #ifndef LIGHT_HPP
 #define LIGHT_HPP
-#include "rng.hpp"
-#include "color.hpp"
+#include "rng.h"
+#include "color.h"
 class Light{
 protected:
 	int _numSamples; //number of shadow ray samples to generate

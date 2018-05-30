@@ -2,8 +2,8 @@
 
 #ifndef RAYTRACER_HPP
 #define RAYTRACER_HPP
-#include "shader.hpp"
-#include "image.hpp"
+#include "shader.h"
+#include "color.h"
 #define DEFAULT_DEPTH 2
 #define BIAS 0.001
 class RayTracer{

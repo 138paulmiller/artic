@@ -21,7 +21,7 @@ private:
 public:
 	Args(int argc, char ** argv);
 	~Args();
-
+	// if argument cannot be parse, value=DEFAULT will be returned
 	long getInt(std::string key, long value = DEFAULT_INT);
 	double getFloat(std::string key, double value = DEFAULT_FLOAT);
 	std::string getString(std::string key, std::string value = DEFAULT_STRING);

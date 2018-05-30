@@ -1,5 +1,5 @@
 
-#include "primitives.hpp"
+#include "primitives.h"
 
 /************************************* Sphere *****************************/
 Sphere::Sphere(const Vec3f & center, double radius, Material * material)

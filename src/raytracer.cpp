@@ -1,4 +1,4 @@
-#include "raytracer.hpp"
+#include "raytracer.h"
 
 RayTracer::RayTracer(
 		Camera* camera,
@@ -70,6 +70,7 @@ Color RayTracer::trace(const Ray3f & ray, const Scene & scene, Intersection& int
 	if(intersection.valid()){
 		//trace the shadow, reflect and refract rays depending on material
 		//shadow ray is from poi to light, if any lights produce shadow 
+		_shader->shade(color, *_camera, scene, intersection, intersection.object()->material());
 		if(depth > 0 ){
 			switch(intersection.object()->material()->type)
 			{
@@ -77,7 +78,6 @@ Color RayTracer::trace(const Ray3f & ray, const Scene & scene, Intersection& int
 				{
 					const NonDielectricMaterial * material = dynamic_cast<const NonDielectricMaterial*>(intersection.object()->material());
 					double refl = material->reflectivity;
-					_shader->shade(color, *_camera, scene, intersection, material);
 					// only get the shadow color
 					//if relfective
 					if(! almost_equal(0.0, refl)){
@@ -115,7 +115,6 @@ Color RayTracer::trace(const Ray3f & ray, const Scene & scene, Intersection& int
 						refractRay.setDirection(refract(ray.direction(), intersection.normal(), index).normal());
 						//compute reflect ray and retrace!, grab the color
 						refractColor = trace(refractRay, scene, refractIntersection, depth-1);	
-
 					}
 					if(isOut)
 						reflectRay.setOrigin(intersection.poi() + intersection.normal()*BIAS);
@@ -123,17 +122,16 @@ Color RayTracer::trace(const Ray3f & ray, const Scene & scene, Intersection& int
 						reflectRay.setOrigin(intersection.poi() - intersection.normal()*BIAS);
 					reflectRay.setDirection(reflect(ray.direction(), intersection.normal()).normal());
 					reflectIntersection.setIgnoreObject(intersection.object()); //prevent self intersection
-
 					reflectColor = trace(reflectRay, scene, reflectIntersection, depth-1);
 					
-					color = reflectColor * kr + refractColor * (1-kr);  
+					color += reflectColor * kr + refractColor * (1-kr);  
 
 					break;
 				}
 				default: break;
 			}
-			computeShadowColor(color, ray, scene, intersection, 0); //not recursive		
-		}
+		} //end recursion
+		computeShadowColor(color, ray, scene, intersection, 0); //not recursive		
 	}
 	color.clamp(1);
 	return color;

@@ -1,11 +1,11 @@
 #include <math.h>
-#include "image.hpp"
+#include "image.h"
 
-int main(){
+int test_img(){
 	const char * OUT_FILE = "OUT.ppm";
 	const int W = 255;
 	const int H = 255;
-	Image<HDR> img(W,H);
+	Image img(W,H);
 	int cx =W/2; int cy = H/2;
 	int radius = (W+H)/4;
 	double d = 0;
@@ -19,5 +19,6 @@ int main(){
 	}
 
 	remove(OUT_FILE);
-	Image<HDR>::exportPPM(OUT_FILE, img);
+	Image::exportPPM(OUT_FILE, img);
+	return 0;
 }

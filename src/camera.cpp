@@ -1,4 +1,4 @@
-#include "camera.hpp"
+#include "camera.h"
 
 Camera::Camera(Vec3f eye, Vec3f up, Vec3f dir){
   _eye = eye;
@@ -32,7 +32,7 @@ void Viewport::uv(double& u, double& v, int i, int j){
 	v=_bottom+(_top - _bottom)*(j + 0.5)/_yResolution;
 }
 
-void OrthographicProjection::getViewRay(math::Ray3f &viewRay, const Camera& camera, double u, double v) const{
+void OrthographicProjection::getViewRay(Ray3f &viewRay, const Camera& camera, double u, double v) const{
 	viewRay.setOrigin(camera.eye() + camera.u()*u + camera.v()*v);
 	viewRay.setDirection(-camera.w());
 
@@ -41,7 +41,7 @@ void OrthographicProjection::getViewRay(math::Ray3f &viewRay, const Camera& came
 PerspectiveProjection::PerspectiveProjection(double focalLength)
 	:_focalLength(focalLength){}
 
-void PerspectiveProjection::getViewRay(math::Ray3f &viewRay,const Camera& camera, double u, double v) const{
+void PerspectiveProjection::getViewRay(Ray3f &viewRay,const Camera& camera, double u, double v) const{
 	viewRay.setOrigin(camera.eye());
 	viewRay.setDirection((-camera.w() * _focalLength + camera.u()*u + camera.v()*v).normal() ) ;
 }

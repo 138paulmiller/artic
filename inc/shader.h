@@ -1,8 +1,8 @@
 #ifndef SHADER_H
 #define SHADER_H
-#include "color.hpp"
-#include "camera.hpp"
-#include "scene.hpp"
+#include "image.h"
+#include "camera.h"
+#include "scene.h"
 
 class Shader{
 protected:
@@ -14,7 +14,7 @@ public:
 	virtual void shade( Color & color, 
 						const Camera& camera, const Scene& scene, 
 						const Intersection & intersection,
-						const NonDielectricMaterial * material)=0;
+						const Material * material)=0;
 };
 
 class FlatShader : public Shader{
@@ -23,7 +23,7 @@ public:
 				const Camera& camera, 
 				const Scene& scene, 
 				const Intersection & intersection,
-				const NonDielectricMaterial * material);
+				const Material * material);
 };
 
 class BlinnPhongShader : public Shader{
@@ -32,7 +32,7 @@ public:
 				const Camera& camera, 
 				const Scene& scene, 
 				const Intersection & intersection,
-				const NonDielectricMaterial * material);
+				const Material * material);
 };
 
 

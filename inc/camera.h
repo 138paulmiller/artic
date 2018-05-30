@@ -1,13 +1,13 @@
 #ifndef CAMERA_HPP
 #define CAMERA_HPP
 
-#include "math.hpp"
+#include "lamath.h"
 #include <memory>
 /*
 	Contains camera and, projection, and viewport classes
 	
 */
-using namespace math;
+using namespace lamath;
 class Camera;
 class Viewport;
 class Orthographic;
@@ -25,7 +25,7 @@ public:
 	const Vec3f & v()const;
 	const Vec3f & w()const;
 private:
- 	math::Vec3f _eye, _u, _v, _w;
+ 	Vec3f _eye, _u, _v, _w;
 };
 
 
@@ -45,18 +45,18 @@ private:
 //abstract
 class Projection{
 public:
-	virtual void getViewRay(math::Ray3f & viewRay, const Camera & cam, double u, double v) const = 0;
+	virtual void getViewRay(Ray3f & viewRay, const Camera & cam, double u, double v) const = 0;
 };
 
 class OrthographicProjection: public Projection{
 public:
-	void getViewRay(math::Ray3f & viewRay, const Camera & cam, double u, double v) const;
+	void getViewRay(Ray3f & viewRay, const Camera & cam, double u, double v) const;
 };
 
 class PerspectiveProjection: public Projection{
 public:
 	PerspectiveProjection(double focalLength);
-	void getViewRay(math::Ray3f & viewRay, const Camera & cam, double u, double v) const;
+	void getViewRay(Ray3f & viewRay, const Camera & cam, double u, double v) const;
 private:
 	double _focalLength;
 };

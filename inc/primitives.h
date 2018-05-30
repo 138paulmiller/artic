@@ -1,7 +1,7 @@
 #ifndef PRIMITIVES_HPP
 #define PRIMITIVES_HPP
 
-#include "object.hpp"
+#include "object.h"
 
 class Sphere : public Object{
 private:

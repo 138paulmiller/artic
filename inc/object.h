@@ -3,10 +3,10 @@
 
 #include <memory>
 #include <limits>
-#include "math.hpp"
-#include "color.hpp"
+#include "lamath.h"
+#include "color.h"
 
-using namespace math;
+using namespace lamath;
 class Object;
 class Material;
 class Intersection;
@@ -24,21 +24,16 @@ struct Material{
 	// Color emission;//color emitted
 	//blinn-phong-phong coeff
 	MaterialType type;
-	Material(const MaterialType &type=NONE):type(type){}
+	Color ambient;
+	Material(const Color & ambient, const MaterialType &type=NONE)
+		:ambient(ambient), type(type){}
 	virtual ~Material(){}
 };
 
 struct DielectricMaterial: public Material{
-// For material blinn-phong coefficients see 
-//	http://devernay.free.fr/cours/opengl/materials.html
-	//Box for object material coefficients and colors
-	// Color base;//surface color
-	// Color emission;//color emitted
-	//blinn-phong-phong coeff
 	double refractionIndex;
-
-	DielectricMaterial(	const double & refractionIndex):
-	Material(DIELECTRIC),	
+	DielectricMaterial(	const Color & base, const double & refractionIndex):
+	Material(ambient, DIELECTRIC),	
 	refractionIndex(refractionIndex){}
 };
 
@@ -49,17 +44,16 @@ struct NonDielectricMaterial: public Material{
 	// Color base;//surface color
 	// Color emission;//color emitted
 	//blinn-phong-phong coeff
-	Color ambient;
 	Color diffuse;
 	Color specular;
 	double shininess;
 	double reflectivity;
 
 	NonDielectricMaterial(	
-		const Color & ambient,	const Color & diffuse,	const Color & specular,	
+		const Color & ambient, 	const Color & diffuse,	const Color & specular,	
 		const double & shininess, const double & reflectivity):
-	Material(NONDIELECTRIC),
-	ambient(ambient), diffuse(diffuse), specular(specular),	
+	Material(ambient, NONDIELECTRIC),
+	diffuse(diffuse), specular(specular),	
 	shininess(shininess), reflectivity(reflectivity){}
 };
 

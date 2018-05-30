@@ -2,8 +2,8 @@
 #define SCENE_HPP
 
 #include <vector>
-#include "object.hpp"
-#include "light.hpp"
+#include "object.h"
+#include "light.h"
 
 
 //base object represents

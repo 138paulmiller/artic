@@ -1,15 +1,16 @@
 
-#include "math.hpp"
-#define ERR(code,got, expect) {std::cout << std::setprecision(math::precision)\
+#include "lamath.h"
+using namespace lamath;
+#define ERR(code,got, expect) {std::cout << std::setprecision(precision)\
 										<< "\nFail: " << #code\
 										<< "\n\tReceived:" << got\
 										<< "\n\tExpected:" << expect;}
 #define PASS(code,got) {std::cout << "\nPassed: " << #code;}
 #define TEST_EQ(msg, code, expect)  if(	code==expect )PASS(msg, code)else ERR(msg,code,expect)
-#define TEST_ALMOST_EQ(msg, code, expect)  if(math::almost_equal(code, expect) )PASS(msg, code)else ERR(msg,code,expect)
-using namespace math;
+#define TEST_ALMOST_EQ(msg, code, expect)  if(almost_equal(code, expect) )PASS(msg, code)else ERR(msg,code,expect)
+using namespace lamath;
 
-int main(){
+int test_math(){
 	std::cout << "\nTESTING VEC\n";
 	Vec3f a0({1,3,5});
 	Vec3f b0(a0);
@@ -178,10 +179,8 @@ int main(){
 
 
 
-
-
-
 	std::cout << "\n\nDONE\n\n";
+	return 0;
 }
 
 

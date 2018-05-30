@@ -1,4 +1,4 @@
-#include "args.hpp"
+#include "args.h"
 
 Args::Args(int argc, char ** argv){
 	//parse all strings as -key value
