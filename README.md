@@ -5,4 +5,4 @@
 	make [rebuild][clean][test]
 
 ## Example image
-![alt text](image/out.png)
+![alt text](images/out.png)

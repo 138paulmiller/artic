@@ -2,3 +2,5 @@ build/
 test/build/
 *.VC.db
 *.VC.VC.opendb
+*.vcxproj.user
+.vs/artic/v14
